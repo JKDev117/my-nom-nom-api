@@ -5,6 +5,7 @@ const express = require('express')
 const morgan = require('morgan')
 const helmet = require('helmet')
 const cors = require('cors')
+const { CLIENT_ORIGIN } = require('./config')
 const { NODE_ENV } = require('./config')
 
 const app = express()
@@ -15,7 +16,9 @@ const morganOption = (NODE_ENV === 'production')
 
 app.use(morgan(morganOption))
 app.use(helmet()) //Make sure to place helmet before cors in the pipeline. 17.6
-app.use(cors())
+app.use(cors({
+    origin: CLIENT_ORIGIN
+  }))
 
 
 
