@@ -7,6 +7,7 @@ const helmet = require('helmet')
 const cors = require('cors')
 const { CLIENT_ORIGIN } = require('./config')
 const { NODE_ENV } = require('./config')
+const menuRouter = require('./menu/menu-router')
 
 const app = express()
 
@@ -20,8 +21,6 @@ app.use(cors({
     origin: CLIENT_ORIGIN
   }))
 
-
-
 app.use(function errorHandler(error, req, res, next) {
   let response
   if (NODE_ENV === 'production') {
@@ -33,8 +32,12 @@ app.use(function errorHandler(error, req, res, next) {
   res.status(500).json(response)
 })
 
+app.use(menuRouter)
+
+
 app.get('/', (req, res) => {
   res.send('Hello, world!')
 })
+
 
 module.exports = app
