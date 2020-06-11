@@ -6,6 +6,8 @@
 //and to be able to add these functions
 //as globals inside tests
 
+require('dotenv').config()
+
 const { expect } = require('chai')
 const supertest = require('supertest')
 
