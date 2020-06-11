@@ -42,7 +42,7 @@ describe('Menu Endpoints', function(){
                     .insert(menuItems)
             })
 
-            it('GET /menu respons with 200 and all of the menu items', () => {
+            it('GET /menu responds with 200 and all of the menu items', () => {
                 return supertest(app)
                     .get('/menu')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
