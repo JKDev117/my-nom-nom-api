@@ -2,7 +2,7 @@ function createMenu(){
     return [
         {id: 1, name: "Sausage, Eggs, Biscuit, & Hashbrowns", image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", calories: 750, carbs: 53, protein: 25, fat: 49, category: "Breakfast"},
         {id: 2, name: "Breakfast Burrito", image_url:"https://www.tasteofhome.com/wp-content/uploads/2018/01/Sausage-Breakfast-Burritos_EXPS_SDDJ19_1760_C07_20_1b.jpg", calories: 300, carbs: 26, protein: 13, fat: 16, category: "Breakfast"},
-        {id: 3, name: "Pancakes", image_url:"https://th.bing.com/th/id/OIP.PxQhB5NydJk5bG6K0oqndgHaKK?pid=Api&rs=1", calories : 590, carbs: 102, protein: 9, fat: 15, category: "Breakfast"},
+        {id: 3, name: "Pancakes", image_url:"https://th.bing.com/th/id/OIP.PxQhB5NydJk5bG6K0oqndgHaKK?pid=Api&rs=1", calories: 590, carbs: 102, protein: 9, fat: 15, category: "Breakfast"},
     
         {id: 4, name: "Tuna Sandwich", image_url:"https://www.simplyrecipes.com/wp-content/uploads/2018/07/Add-ins-for-tuna-salad-3.jpg", calories: 450, carbs: 38, protein: 19, fat: 25, category: "Lunch"},
         {id: 5, name: "Chicken Nuggets", image_url:"https://www.tasteofhome.com/wp-content/uploads/2018/01/exps168399_TH163620D11_12_6b.jpg", calories: 830, carbs: 51, protein: 46, fat: 49, category: "Lunch"},
