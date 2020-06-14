@@ -92,17 +92,46 @@ describe('Menu Endpoints', function(){
                     expect(res.body.name).to.eql(newMenuItem.name)
                     expect(res.body.category).to.eql(newMenuItem.category)
                 })
-                /*
                 .then(postRes => 
                     supertest(app)
                         .get(`/menu/${postRes.body.id}`)
                         .expect(postRes.body)
                 )
-                */
+                
         })
-        
-
     })//end describe 'POST /menu'
+
+    //describe 'GET /menu/:item_id'
+    describe.only('GET /menu/:item_id', () => {
+        context('Given no menu items', () => {
+            it('responds with 404', () => {
+                const itemId = 123456
+                return supertest(app)
+                    .get(`/menu/${itemId}`)
+                    .expect(404, {error: {message: `Menu item does not exist.`}})
+            })
+        })//end context 'Given no menu items'
+
+        context('Given there are menu items in the database', () => {
+            const testMenuItems =  createMenu()
+
+            beforeEach('insert menu items', () => {
+                return db
+                    .into('menu_tb')
+                    .insert(testMenuItems)
+            })
+
+            it('responds with 200 and the specified menu item', () => {
+                const itemId = 1
+                const expectedMenuItem = testMenuItems[itemId - 1]
+                return supertest(app)
+                    .get(`/menu/${itemId}`)
+                    .expect(200, expectedMenuItem)
+            })
+        })//end context 'Given there are menu items in the database'
+
+    })//end describe 'GET /menu/:item_id'
+
 
 
 })//end describe 'Menu Endpoints'

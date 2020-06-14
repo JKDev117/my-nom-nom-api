@@ -56,6 +56,31 @@ menuRouter
             })
             .catch(next)
     })
+    
+    
+menuRouter
+    .route('/menu/:item_id')
+    //ALL
+    .all((req, res, next) => {
+        MenuService.getById(
+            req.app.get('db'),
+            req.params.item_id
+        )
+        .then(item => {
+            if(!item){
+                return res.status(404).json({
+                    error: {message: `Menu item does not exist.`}
+                })
+            }
+            res.item = item
+            next()
+        })
+        .catch(next)
+    })
+    //GET
+    .get((req, res, next) => 
+        res.json(serializeMenuItem(res.item)) 
+    )
 
 
 

@@ -11,6 +11,13 @@ const MenuService = {
                 return rows[0]
             })
     },
+    getById(knex, id){
+        return knex
+            .from('menu_tb')
+            .select('*')
+            .where('id', id)
+            .first()
+    }
 
 
 
