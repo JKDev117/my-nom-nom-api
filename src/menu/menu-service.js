@@ -1,11 +1,19 @@
-
-
-
-
 const MenuService = {
     getAllMenuItems(knex) {
         return knex.select('*').from('menu_tb')
     },
+    addMenuItem(knex, newMenuItem){
+        return knex
+            .insert(newMenuItem)
+            .into('menu_tb')
+            .returning('*')
+            .then(rows => {
+                return rows[0]
+            })
+    },
+
+
+
 }
 
 

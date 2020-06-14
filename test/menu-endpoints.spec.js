@@ -1,6 +1,8 @@
 const knex = require('knex')
 const app = require('../src/app')
 const { createMenu, makeMaliciousMenuItem } = require('./menu.fixtures')
+const supertest = require('supertest')
+const { expect } = require('chai')
 const { maliciousMenuItem, expectedMenuItem } = makeMaliciousMenuItem()
 
 describe('Menu Endpoints', function(){
@@ -48,7 +50,7 @@ describe('Menu Endpoints', function(){
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(200, menuItems)
             })
-        })
+        }) //end context 'Given there are menu items in the database'
 
         context('Given an XSS attack menu item', () => {
             beforeEach('insert malicious menu item', () => {
@@ -67,15 +69,40 @@ describe('Menu Endpoints', function(){
                         expect(res.body[0].url).to.eql(expectedMenuItem.url)
                     })
             })
-        })
-
-            
-
-
-    
+        })//end context 'Given an XSS attack menu item'
 
     })//end describe 'GET /menu'
 
+    
+    //describe 'POST /menu'
+    describe.only('POST /menu', () => {
+
+        it('creates a menu item, responding with 201 and the new menu item', function() {
+            const newMenuItem = {
+                name: "New Menu Item",
+                category: "Breakfast"
+            }
+
+            return supertest(app)
+                .post('/menu')
+                .send(newMenuItem)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body).to.have.property('id')
+                    expect(res.body.name).to.eql(newMenuItem.name)
+                    expect(res.body.category).to.eql(newMenuItem.category)
+                })
+                /*
+                .then(postRes => 
+                    supertest(app)
+                        .get(`/menu/${postRes.body.id}`)
+                        .expect(postRes.body)
+                )
+                */
+        })
+        
+
+    })//end describe 'POST /menu'
 
 
 })//end describe 'Menu Endpoints'
