@@ -164,7 +164,7 @@ describe('Menu Endpoints', function(){
 
     })//end describe 'GET /menu/:item_id'
 
-    describe.only(`DELETE /menu/:item_id`, () => {
+    describe(`DELETE /menu/:item_id`, () => {
         context('Given no menu items', () => {
             it(`responds with 404`, () => {
                 const itemId = 123456
@@ -199,11 +199,57 @@ describe('Menu Endpoints', function(){
         })//end context 'Given there are menu items in the database'
     }) //end describe 'DELETE /menu/:item_id'
 
+    describe.only(`PATCH /menu/:item_id`, () => {
+        context('Given no menu items', () => {
+            it('responds with 404', () => {
+                const itemId = 123456
+                return supertest(app)
+                    .patch(`/menu/${itemId}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .expect(404, { error: {message: 'Menu item does not exist.'}})
+            })
+        })//end context 'Given no menu items'
+
+        context('Given there are menu items in the database', () => {
+            const testMenuItems = createMenu()
+
+            beforeEach('insert menu items', () => {
+                return db
+                    .into('menu_tb')
+                    .insert(testMenuItems)
+            })
+
+            it('responds with 204 and updates the menu item', () => {
+                const idToUpdate = 1
+                const updatedMenuItem = {
+                    name: "Updated Menu Item Name"
+                }
+                const expectedMenuItem = {
+                    ...testMenuItems[idToUpdate - 1],
+                    ...updatedMenuItem
+                }
+                return supertest(app)
+                    .patch(`/menu/${idToUpdate}`)
+                    .send(updatedMenuItem)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .expect(204)
+                    .then(res => 
+                        supertest(app)
+                            .get(`/menu/${idToUpdate}`)
+                            //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            .expect(expectedMenuItem)
+                    )
+            })
+
+
+
+        })//end context 'Given there are menu items in the database'
+
+    }) //end describe 'PATCH /menu/:item_id'
 
 
 
 
-    
 })//end describe 'Menu Endpoints'
 
 

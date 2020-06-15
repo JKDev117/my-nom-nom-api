@@ -109,6 +109,44 @@ menuRouter
             })
             .catch(next)
     })
+    //PATCH
+    .patch(bodyParser, (req, res, next) => {
+        const { name, image_url, calories, carbs, protein, fat, category } = req.body
+        const itemToUpdate = { name, image_url, calories, carbs, protein, fat, category }
+
+        const numberOfValues = Object.values(itemToUpdate).filter(Boolean).length
+
+        if(numberOfValues === 0){
+            //logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`)
+            return res.status(400).json({
+                error: {
+                    message: `Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`
+                }
+            })
+        }
+
+        //conditions that must be met for integers goes here ....
+
+
+        if(image_url!=undefined && !isWebUri(image_url)){
+            //logger.error(`url must be a valid URL`)
+            return res
+                .status(400)
+                .json({
+                    error: { message: `url must be a valid URL`}
+                })
+        }
+
+        MenuService.updateMenuItem(
+            req.app.get('db'),
+            req.params.item_id,
+            itemToUpdate
+        )
+            .then(numRowsAffected => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
 
 
 

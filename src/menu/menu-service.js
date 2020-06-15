@@ -22,13 +22,14 @@ const MenuService = {
         return knex('menu_tb')
             .where({ id })
             .delete()
+    },
+    updateMenuItem(knex, id, newMenuItemFields){
+        return knex('menu_tb')
+            .where({ id })
+            .update(newMenuItemFields)
     }
+}//end MenuService
 
-
-
-
-
-}
 
 
 module.exports = MenuService
