@@ -19,7 +19,7 @@ function makeMaliciousMenuItem(){
     const maliciousMenuItem = {
         id: 1, 
         name: 'Sausage, Eggs, Biscuit, & <script>alert("xss");</script>', 
-        image_url:'https://insecure-website.com/status?message=<script>alert("xss");</script>',
+        image_url:`https://insecure-website.com/status?message=<script>alert("xss");</script>`,
         calories: 750,
         carbs: 53, 
         protein: 25,
@@ -30,7 +30,7 @@ function makeMaliciousMenuItem(){
     const expectedMenuItem = {
         ...maliciousMenuItem,
         name: 'Sausage, Eggs, Biscuit, & &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
-        image_url:'https://insecure-website.com/status?message=&lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+        image_url:`https://insecure-website.com/status?message=&lt;script&gt;alert(\"xss\");&lt;/script&gt;`,
     }
 
     return {

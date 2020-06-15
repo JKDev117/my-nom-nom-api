@@ -66,7 +66,7 @@ describe('Menu Endpoints', function(){
                     .expect(200)
                     .expect(res => {
                         expect(res.body[0].name).to.eql(expectedMenuItem.name)
-                        expect(res.body[0].url).to.eql(expectedMenuItem.url)
+                        expect(res.body[0].image_url).to.eql(expectedMenuItem.image_url)
                     })
             })
         })//end context 'Given an XSS attack menu item'
@@ -117,7 +117,18 @@ describe('Menu Endpoints', function(){
                         error: { message: `Missing '${field}' in request body`}
                     })
             })
-        })    
+        })
+        
+        it('removes XSS attack content from response', () => {
+            return supertest(app)
+                .post('/menu')
+                .send(maliciousMenuItem)
+                .expect(201)
+                .expect(response => {
+                    expect(response.body.name).to.eql(expectedMenuItem.name)
+                    expect(response.body.image_url).to.eql(expectedMenuItem.image_url)
+                })
+        })
     })//end describe 'POST /menu'
 
 

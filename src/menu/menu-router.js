@@ -31,9 +31,22 @@ menuRouter
     })
     //POST
     .post(bodyParser, (req, res, next) => {
-        const { name, category } = req.body
-        const newMenuItem = { name, category }
+        const { name, image_url, category } = req.body
+        const newMenuItem = { name, image_url, category }
 
+        if(newMenuItem.name == null){
+            return res
+                    .status(400)
+                    .json({error: {message: `Missing 'name' in request body`}})
+        }
+
+        if(newMenuItem.category == null){
+            return res
+                    .status(400)
+                    .json({error: {message: `Missing 'category' in request body`}})
+        }
+
+        /*
         for(const [key, value] of Object.entries(newMenuItem)){
             if(value==null){
                 return res
@@ -41,6 +54,7 @@ menuRouter
                     .json({error: {message: `Missing '${key}' in request body`}})
             }
         }
+        */
 
         newMenuItem.name = name
 
@@ -55,6 +69,7 @@ menuRouter
                     .json(serializeMenuItem(item))
             })
             .catch(next)
+            
     })
     
     
