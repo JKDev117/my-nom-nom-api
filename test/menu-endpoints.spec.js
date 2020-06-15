@@ -97,12 +97,33 @@ describe('Menu Endpoints', function(){
                         .get(`/menu/${postRes.body.id}`)
                         .expect(postRes.body)
                 )
-                
         })
+
+        const requiredFields = ['name', 'category']
+
+        requiredFields.forEach(field => {
+            const newMenuItem = {
+                name: 'New Menu Item',
+                category: 'Breakfast'
+            }
+
+            it(`responds with 400 and an error message when the ${field} is missing`, () => {
+                delete newMenuItem[field]
+
+                return supertest(app)
+                    .post('/menu')
+                    .send(newMenuItem)
+                    .expect(400, {
+                        error: { message: `Missing '${field}' in request body`}
+                    })
+            })
+        })    
     })//end describe 'POST /menu'
 
+
+
     //describe 'GET /menu/:item_id'
-    describe.only('GET /menu/:item_id', () => {
+    describe('GET /menu/:item_id', () => {
         context('Given no menu items', () => {
             it('responds with 404', () => {
                 const itemId = 123456
