@@ -98,10 +98,12 @@ menuRouter
     )
     //DELETE
     .delete((req, res, next) => {
+        //console.log(req.params)
         MenuService.deleteMenuItem(
             req.app.get('db'),
             req.params.item_id
         )
+        
             .then(() => {
                 res.status(204).end()
             })
