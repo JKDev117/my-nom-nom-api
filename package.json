@@ -26,6 +26,7 @@
     "knex": "^0.21.1",
     "morgan": "^1.10.0",
     "pg": "^8.2.1",
+    "valid-url": "^1.0.9",
     "xss": "^1.0.7"
   },
   "devDependencies": {

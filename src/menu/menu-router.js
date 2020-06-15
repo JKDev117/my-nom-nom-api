@@ -4,6 +4,7 @@ const menuRouter = express.Router()
 const bodyParser = express.json()
 const xss = require('xss')
 const MenuService = require('./menu-service')
+const validUrl = require('valid-url');
 
 
 const serializeMenuItem = item => ({
@@ -31,9 +32,10 @@ menuRouter
     })
     //POST
     .post(bodyParser, (req, res, next) => {
-        const { name, image_url, category } = req.body
-        const newMenuItem = { name, image_url, category }
+        const { name, image_url, calories, carbs, protein, fat, category } = req.body
+        const newMenuItem = { name, image_url, calories, carbs, protein, fat, category }
 
+        /* passing
         if(newMenuItem.name == null){
             return res
                     .status(400)
@@ -45,7 +47,34 @@ menuRouter
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
-
+        */
+        
+        /* passing
+        const array = [calories, carbs, protein, fat]
+                
+        array.forEach(element => {
+          if(element!=undefined && (!Number.isInteger(element) || element < 0)){
+            //logger.error(`Rating must be a number greater than zero`)
+            return res
+                .status(400)
+                .json({
+                    error: { message: `Rating must be a number greater than zero`}
+                })
+          }
+        })
+        */
+        console.log('image url: ', image_url)
+        //failing
+        if(image_url!=undefined && !validUrl.isWebUri(image_url)){
+            //logger.error(`url must be a valid URL`)
+            return res
+                .status(400)
+                .json({
+                    error: { message: `url must be a valid URL`}
+                })
+        }
+        
+        
         /*
         for(const [key, value] of Object.entries(newMenuItem)){
             if(value==null){
@@ -113,9 +142,10 @@ menuRouter
     .patch(bodyParser, (req, res, next) => {
         const { name, image_url, calories, carbs, protein, fat, category } = req.body
         const itemToUpdate = { name, image_url, calories, carbs, protein, fat, category }
-
+        //console.log('itemToUpdate: ', itemToUpdate)
         const numberOfValues = Object.values(itemToUpdate).filter(Boolean).length
 
+        
         if(numberOfValues === 0){
             //logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`)
             return res.status(400).json({
@@ -124,11 +154,34 @@ menuRouter
                 }
             })
         }
+        
+        if(itemToUpdate.name == null){
+            return res
+                    .status(400)
+                    .json({error: {message: `Missing 'name' in request body`}})
+        }
 
-        //conditions that must be met for integers goes here ....
-
-
-        if(image_url!=undefined && !isWebUri(image_url)){
+        if(itemToUpdate.category == null){
+            return res
+                    .status(400)
+                    .json({error: {message: `Missing 'category' in request body`}})
+        }
+        
+        
+        const array = [calories, carbs, protein, fat]
+                
+        array.forEach(element => {
+          if(element!=undefined && (!Number.isInteger(element) || element < 0)){
+            //logger.error(`Rating must be a number greater than zero`)
+            return res
+                .status(400)
+                .json({
+                    error: { message: `Rating must be a number greater than zero`}
+                })
+          }
+        })
+                
+        if(image_url!=undefined && !validUrl.isWebUri(image_url)){
             //logger.error(`url must be a valid URL`)
             return res
                 .status(400)
@@ -136,6 +189,7 @@ menuRouter
                     error: { message: `url must be a valid URL`}
                 })
         }
+        
 
         MenuService.updateMenuItem(
             req.app.get('db'),
