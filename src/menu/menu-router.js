@@ -167,13 +167,13 @@ menuRouter
         
         const array = [calories, carbs, protein, fat]
                 
-        array.forEach(element => {
+        array.forEach((element, i) => {
           if(element!=undefined && (!Number.isInteger(element) || element < 0)){
             //logger.error(`Rating must be a number greater than zero`)
             return res
                 .status(400)
                 .json({
-                    error: { message: `Rating must be a number greater than zero`}
+                    error: { message: `calories, carbs, protein, or fat category must be a number greater than zero`}
                 })
           }
         })
