@@ -71,11 +71,11 @@ describe('Menu Endpoints', function(){
             })
         })//end context 'Given an XSS attack menu item'
 
-    })//end describe 'GET /menu'
+    })//end describe 'GET /menu'  
 
     
     //describe 'POST /menu'
-    describe.only('POST /menu', () => {
+    describe('POST /menu', () => {
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const newMenuItem = {
@@ -164,8 +164,46 @@ describe('Menu Endpoints', function(){
 
     })//end describe 'GET /menu/:item_id'
 
+    describe.only(`DELETE /menu/:item_id`, () => {
+        context('Given no menu items', () => {
+            it(`responds with 404`, () => {
+                const itemId = 123456
+                return supertest(app)
+                    .delete(`/menu/${itemId}`)
+                    .expect(404, {error: {message: `Menu item does not exist.`}})
+            })
+        })//end context 'Given no menu items'
+
+        context('Given there are menu items in the database', () => {
+            const testMenuItems = createMenu()
+            
+            beforeEach('insert menu items', () => {
+                return db
+                    .into('menu_tb')
+                    .insert(testMenuItems)
+            })
+
+            it('responds with 204 and removes the menu item', () => {
+                const idToRemove = 1
+                const expectedMenuItems = testMenuItems.filter(item => item.id !== idToRemove)
+                return supertest(app)
+                    .delete(`/menu/${idToRemove}`)
+                    .expect(204)
+                    .then(res => 
+                        supertest(app)
+                            .get(`/menu`)
+                            .expect(expectedMenuItems)
+                    )
+            })
+
+        })//end context 'Given there are menu items in the database'
+    }) //end describe 'DELETE /menu/:item_id'
 
 
+
+
+
+    
 })//end describe 'Menu Endpoints'
 
 

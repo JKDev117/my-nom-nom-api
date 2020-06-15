@@ -17,7 +17,14 @@ const MenuService = {
             .select('*')
             .where('id', id)
             .first()
+    },
+    deleteMenuItem(knex, id) {
+        return knex('menu_tb')
+            .where({ id })
+            .delete()
     }
+
+
 
 
 

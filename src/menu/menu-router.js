@@ -96,6 +96,17 @@ menuRouter
     .get((req, res, next) => 
         res.json(serializeMenuItem(res.item)) 
     )
+    //DELETE
+    .delete((req, res, next) => {
+        MenuService.deleteMenuItem(
+            req.app.get('db'),
+            req.params.item_id
+        )
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
 
 
 
