@@ -6,12 +6,12 @@ const morgan = require('morgan')
 const helmet = require('helmet')
 const cors = require('cors')
 const { CLIENT_ORIGIN } = require('./config')
-const { NODE_ENV } = require('./config')
+const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
 
 const app = express()
 
-const morganOption = (NODE_ENV === 'production')
+const morganOption = (process.env.NODE_ENV === 'production')
   ? 'tiny'
   : 'common';
 
@@ -26,6 +26,7 @@ app.use(function errorHandler(error, req, res, next) {
   if (NODE_ENV === 'production') {
     response = { error: { message: 'server error' } }
   } else {
+    logger.error(error.message)
     console.error(error)
     response = { message: error.message, error }
   }

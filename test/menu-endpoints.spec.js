@@ -75,7 +75,7 @@ describe('Menu Endpoints', function(){
 
     
     //describe 'POST /menu'
-    describe.only('POST /menu', () => {
+    describe('POST /menu', () => {
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const newMenuItem = {
@@ -119,7 +119,7 @@ describe('Menu Endpoints', function(){
             })
         })
         
-        it.only('removes XSS attack content from response', () => {
+        it('removes XSS attack content from response', () => {
             return supertest(app)
                 .post('/menu')
                 .send(maliciousMenuItem)

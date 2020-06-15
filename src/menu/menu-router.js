@@ -4,7 +4,8 @@ const menuRouter = express.Router()
 const bodyParser = express.json()
 const xss = require('xss')
 const MenuService = require('./menu-service')
-const validUrl = require('valid-url');
+const validate = require('url-validator')
+const logger = require('../logger')
 
 
 const serializeMenuItem = item => ({
@@ -35,7 +36,6 @@ menuRouter
         const { name, image_url, calories, carbs, protein, fat, category } = req.body
         const newMenuItem = { name, image_url, calories, carbs, protein, fat, category }
 
-        /* passing
         if(newMenuItem.name == null){
             return res
                     .status(400)
@@ -47,9 +47,7 @@ menuRouter
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
-        */
         
-        /* passing
         const array = [calories, carbs, protein, fat]
                 
         array.forEach(element => {
@@ -62,18 +60,17 @@ menuRouter
                 })
           }
         })
-        */
-        console.log('image url: ', image_url)
-        //failing
-        if(image_url!=undefined && !validUrl.isWebUri(image_url)){
-            //logger.error(`url must be a valid URL`)
+        
+        //console.log('image url: ', image_url)
+
+        if(image_url!=undefined && !validate(image_url)){
+            logger.error(`url must be a valid URL`)
             return res
                 .status(400)
                 .json({
                     error: { message: `url must be a valid URL`}
                 })
         }
-        
         
         /*
         for(const [key, value] of Object.entries(newMenuItem)){
@@ -83,9 +80,9 @@ menuRouter
                     .json({error: {message: `Missing '${key}' in request body`}})
             }
         }
-        */
-
+        
         newMenuItem.name = name
+        */
 
         MenuService.addMenuItem(
             req.app.get('db'),
@@ -181,7 +178,7 @@ menuRouter
           }
         })
                 
-        if(image_url!=undefined && !validUrl.isWebUri(image_url)){
+        if(image_url!=undefined && !validate(image_url)){
             //logger.error(`url must be a valid URL`)
             return res
                 .status(400)
