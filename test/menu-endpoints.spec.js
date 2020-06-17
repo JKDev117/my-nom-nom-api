@@ -31,6 +31,7 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     //GET
                     .get('/menu')
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(200, [])
             })
         })//End context 'Given no menu items'
@@ -47,7 +48,7 @@ describe('Menu Endpoints', function(){
             it('GET /menu responds with 200 and all of the menu items', () => {
                 return supertest(app)
                     .get('/menu')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(200, menuItems)
             })
         }) //end context 'Given there are menu items in the database'
@@ -62,7 +63,7 @@ describe('Menu Endpoints', function(){
             it('removes XSS attack content', () => {
                 return supertest(app)
                     .get('/menu')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(200)
                     .expect(res => {
                         expect(res.body[0].name).to.eql(expectedMenuItem.name)
@@ -86,6 +87,7 @@ describe('Menu Endpoints', function(){
             return supertest(app)
                 .post('/menu')
                 .send(newMenuItem)
+                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                 .expect(201)
                 .expect(res => {
                     expect(res.body).to.have.property('id')
@@ -95,6 +97,7 @@ describe('Menu Endpoints', function(){
                 .then(postRes => 
                     supertest(app)
                         .get(`/menu/${postRes.body.id}`)
+                        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(postRes.body)
                 )
         })
@@ -113,6 +116,7 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     .post('/menu')
                     .send(newMenuItem)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(400, {
                         error: { message: `Missing '${field}' in request body`}
                     })
@@ -123,6 +127,7 @@ describe('Menu Endpoints', function(){
             return supertest(app)
                 .post('/menu')
                 .send(maliciousMenuItem)
+                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                 .expect(201)
                 .expect(response => {
                     //expect(response.body.name).to.eql(expectedMenuItem.name)
@@ -140,6 +145,7 @@ describe('Menu Endpoints', function(){
                 const itemId = 123456
                 return supertest(app)
                     .get(`/menu/${itemId}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(404, {error: {message: `Menu item does not exist.`}})
             })
         })//end context 'Given no menu items'
@@ -158,6 +164,7 @@ describe('Menu Endpoints', function(){
                 const expectedMenuItem = testMenuItems[itemId - 1]
                 return supertest(app)
                     .get(`/menu/${itemId}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(200, expectedMenuItem)
             })
         })//end context 'Given there are menu items in the database'
@@ -170,6 +177,7 @@ describe('Menu Endpoints', function(){
                 const itemId = 123456
                 return supertest(app)
                     .delete(`/menu/${itemId}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(404, {error: {message: `Menu item does not exist.`}})
             })
         })//end context 'Given no menu items'
@@ -188,10 +196,12 @@ describe('Menu Endpoints', function(){
                 const expectedMenuItems = testMenuItems.filter(item => item.id !== idToRemove)
                 return supertest(app)
                     .delete(`/menu/${idToRemove}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(204)
                     .then(res => 
                         supertest(app)
                             .get(`/menu`)
+                            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                             .expect(expectedMenuItems)
                     )
             })
@@ -205,7 +215,7 @@ describe('Menu Endpoints', function(){
                 const itemId = 123456
                 return supertest(app)
                     .patch(`/menu/${itemId}`)
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(404, { error: {message: 'Menu item does not exist.'}})
             })
         })//end context 'Given no menu items'
@@ -231,12 +241,12 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     .patch(`/menu/${idToUpdate}`)
                     .send(updatedMenuItem)
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .expect(204)
                     .then(res => 
                         supertest(app)
                             .get(`/menu/${idToUpdate}`)
-                            //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                             .expect(expectedMenuItem)
                     )
             })

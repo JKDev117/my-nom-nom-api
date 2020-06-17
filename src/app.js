@@ -5,9 +5,11 @@ const express = require('express')
 const morgan = require('morgan')
 const helmet = require('helmet')
 const cors = require('cors')
+const {v4:uuid} = require('uuid')
 const { CLIENT_ORIGIN } = require('./config')
 const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
+const validateBearerToken = require('./validate-bearer-token')
 
 const app = express()
 
@@ -20,6 +22,8 @@ app.use(helmet()) //Make sure to place helmet before cors in the pipeline. 17.6
 app.use(cors({
     origin: CLIENT_ORIGIN
   }))
+
+app.use(validateBearerToken);
 
 app.use(function errorHandler(error, req, res, next) {
   let response
@@ -37,6 +41,7 @@ app.use(menuRouter)
 
 
 app.get('/', (req, res) => {
+  //console.log('hi')
   res.send('Hello, world!')
 })
 
