@@ -65,3 +65,4 @@
 {"message":"Unauthorized request to path: /menu/15","level":"error"}
 {"message":"Unauthorized request to path: /menu/15","level":"error"}
 {"message":"Unauthorized request to path: /menu/15","level":"error"}
+{"message":"Unauthorized request to path: /menu","level":"error"}

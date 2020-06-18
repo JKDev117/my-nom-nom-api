@@ -6,7 +6,7 @@ const morgan = require('morgan')
 const helmet = require('helmet')
 const cors = require('cors')
 const {v4:uuid} = require('uuid')
-const { CLIENT_ORIGIN } = require('./config')
+//const { CLIENT_ORIGIN } = require('./config')
 const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
 const validateBearerToken = require('./validate-bearer-token')
@@ -19,9 +19,12 @@ const morganOption = (process.env.NODE_ENV === 'production')
 
 app.use(morgan(morganOption))
 app.use(helmet()) //Make sure to place helmet before cors in the pipeline. 17.6
+app.use(cors())
+/*
 app.use(cors({
     origin: CLIENT_ORIGIN
   }))
+*/
 
 app.use(validateBearerToken);
 
