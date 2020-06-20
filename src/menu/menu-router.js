@@ -63,7 +63,7 @@ menuRouter
         
         //console.log('image url: ', image_url)
 
-        if(image_url!=undefined && !validate(image_url)){
+        if(image_url.length > 0 && image_url!=undefined && !validate(image_url)){
             logger.error(`url must be a valid URL`)
             return res
                 .status(400)
