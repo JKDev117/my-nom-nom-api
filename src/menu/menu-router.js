@@ -144,7 +144,7 @@ menuRouter
 
         
         if(numberOfValues === 0){
-            //logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`)
+            logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`)
             return res.status(400).json({
                 error: {
                     message: `Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`
@@ -168,18 +168,20 @@ menuRouter
         const array = [calories, carbs, protein, fat]
                 
         array.forEach((element, i) => {
-          if(element!=undefined && (!Number.isInteger(element) || element < 0)){
-            //logger.error(`Rating must be a number greater than zero`)
+          if(element!=undefined && element!=null && element.length > 0 && (!Number.isInteger(element) || element < 0)){
+            logger.error(`calories, carbs, protein, or fat category must be a NUMBER greater than zero`)
+            console.log(element)
+            console.log(typeof(element))
             return res
                 .status(400)
                 .json({
-                    error: { message: `calories, carbs, protein, or fat category must be a number greater than zero`}
+                    error: { message: `calories, carbs, protein, or fat category must be a NUMBER greater than zero`}
                 })
           }
         })
                 
-        if(image_url!=undefined && !validate(image_url)){
-            //logger.error(`url must be a valid URL`)
+        if(image_url.length > 0 && image_url!=undefined && !validate(image_url)){
+            logger.error(`url must be a valid URL`)
             return res
                 .status(400)
                 .json({
