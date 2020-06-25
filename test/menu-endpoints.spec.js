@@ -1,12 +1,23 @@
 const knex = require('knex')
 const app = require('../src/app')
-const { createMenu, makeMaliciousMenuItem } = require('./menu.fixtures')
 const supertest = require('supertest')
 const { expect } = require('chai')
-const { maliciousMenuItem, expectedMenuItem } = makeMaliciousMenuItem()
+
+//const { makeUsers, createMenu, makeMaliciousMenuItem, makeAuthHeader } = require('./menu.fixtures')
+//const testUsers = makeUsers()
+//const menuItems = createMenu(testUsers);
+//const { maliciousMenuItem, expectedMenuItem } = makeMaliciousMenuItem(testUsers[0])
+
+const helpers = require('./menu.fixtures')
+
+const {
+    testUsers,
+    testItems,
+} = helpers.makeItemsFixtures()
+
+
 
 describe('Menu Endpoints', function(){
-
 
     let db
 
@@ -20,9 +31,11 @@ describe('Menu Endpoints', function(){
 
     after('disconnect from db', () => db.destroy())
 
-    before('clean the table', () => db('menu_tb').truncate())
+    //before('clean the table', () => db('menu_tb').truncate())
+    before('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
 
-    afterEach('cleanup', () => db('menu_tb').truncate())
+    //afterEach('cleanup', () => db('menu_tb').truncate())
+    afterEach('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
 
     //describe 'GET /menu'
     describe('GET /menu', () => {
@@ -31,39 +44,51 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     //GET
                     .get('/menu')
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(200, [])
             })
         })//End context 'Given no menu items'
 
         context('Given there are menu items in the database', () => {
-            const menuItems = createMenu();
 
             beforeEach('insert menu items', () => {
                 return db
-                    .into('menu_tb')
-                    .insert(menuItems)
+                    .into('users_tb')
+                    .insert(testUsers)
+                    .then(() => 
+                        db
+                         .into('menu_tb')
+                         .insert(testItems)
+                    )
             })
 
             it('GET /menu responds with 200 and all of the menu items', () => {
                 return supertest(app)
                     .get('/menu')
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .expect(200, menuItems)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
+                    .expect(200, testItems)
             })
         }) //end context 'Given there are menu items in the database'
 
         context('Given an XSS attack menu item', () => {
             beforeEach('insert malicious menu item', () => {
                 return db
-                    .into('menu_tb')
-                    .insert([maliciousMenuItem])
+                    .into('users_tb')
+                    .insert([testUsers[0]])
+                    .then(() => 
+                        db
+                         .into('menu_tb')
+                         .insert([maliciousMenuItem])
+                    )        
             })
             
             it('removes XSS attack content', () => {
                 return supertest(app)
                     .get('/menu')
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(200)
                     .expect(res => {
                         expect(res.body[0].name).to.eql(expectedMenuItem.name)
@@ -87,7 +112,8 @@ describe('Menu Endpoints', function(){
             return supertest(app)
                 .post('/menu')
                 .send(newMenuItem)
-                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                .set('Authorization', makeAuthHeader(testUsers[0]))
                 .expect(201)
                 .expect(res => {
                     expect(res.body).to.have.property('id')
@@ -97,7 +123,8 @@ describe('Menu Endpoints', function(){
                 .then(postRes => 
                     supertest(app)
                         .get(`/menu/${postRes.body.id}`)
-                        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                        .set('Authorization', makeAuthHeader(testUsers[0]))
                         .expect(postRes.body)
                 )
         })
@@ -116,7 +143,8 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     .post('/menu')
                     .send(newMenuItem)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(400, {
                         error: { message: `Missing '${field}' in request body`}
                     })
@@ -127,7 +155,8 @@ describe('Menu Endpoints', function(){
             return supertest(app)
                 .post('/menu')
                 .send(maliciousMenuItem)
-                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                .set('Authorization', makeAuthHeader(testUsers[0]))
                 .expect(201)
                 .expect(response => {
                     //expect(response.body.name).to.eql(expectedMenuItem.name)
@@ -139,32 +168,39 @@ describe('Menu Endpoints', function(){
 
 
     //describe 'GET /menu/:item_id'
-    describe('GET /menu/:item_id', () => {
+    describe.only('GET /menu/:item_id', () => {
         context('Given no menu items', () => {
             it('responds with 404', () => {
                 const itemId = 123456
                 return supertest(app)
                     .get(`/menu/${itemId}`)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(404, {error: {message: `Menu item does not exist.`}})
             })
         })//end context 'Given no menu items'
 
         context('Given there are menu items in the database', () => {
-            const testMenuItems =  createMenu()
+            //const testMenuItems =  createMenu()
 
             beforeEach('insert menu items', () => {
                 return db
-                    .into('menu_tb')
-                    .insert(testMenuItems)
+                    .into('users_tb')
+                    .insert(testUsers)
+                    .then(() => 
+                        db
+                         .into('menu_tb')
+                         .insert(testItems)
+                    )
             })
 
             it('responds with 200 and the specified menu item', () => {
                 const itemId = 1
-                const expectedMenuItem = testMenuItems[itemId - 1]
+                const expectedMenuItem = testItems[itemId - 1]
                 return supertest(app)
                     .get(`/menu/${itemId}`)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(200, expectedMenuItem)
             })
         })//end context 'Given there are menu items in the database'
@@ -177,31 +213,39 @@ describe('Menu Endpoints', function(){
                 const itemId = 123456
                 return supertest(app)
                     .delete(`/menu/${itemId}`)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(404, {error: {message: `Menu item does not exist.`}})
             })
         })//end context 'Given no menu items'
 
         context('Given there are menu items in the database', () => {
-            const testMenuItems = createMenu()
+            //const testMenuItems = createMenu()
             
             beforeEach('insert menu items', () => {
                 return db
-                    .into('menu_tb')
-                    .insert(testMenuItems)
+                    .into('users_tb')
+                    .insert(testUsers)
+                    .then(() => 
+                        db
+                         .into('menu_tb')
+                         .insert(testItems)
+                    )
             })
 
             it('responds with 204 and removes the menu item', () => {
                 const idToRemove = 1
-                const expectedMenuItems = testMenuItems.filter(item => item.id !== idToRemove)
+                const expectedMenuItems = testItems.filter(item => item.id !== idToRemove)
                 return supertest(app)
                     .delete(`/menu/${idToRemove}`)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(204)
                     .then(res => 
                         supertest(app)
                             .get(`/menu`)
-                            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            .set('Authorization', makeAuthHeader(testUsers[0]))
                             .expect(expectedMenuItems)
                     )
             })
@@ -215,24 +259,30 @@ describe('Menu Endpoints', function(){
                 const itemId = 123456
                 return supertest(app)
                     .patch(`/menu/${itemId}`)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(404, { error: {message: 'Menu item does not exist.'}})
             })
         })//end context 'Given no menu items'
 
         context('Given there are menu items in the database', () => {
-            const testMenuItems = createMenu()
+            //const testMenuItems = createMenu()
 
             beforeEach('insert menu items', () => {
                 return db
-                    .into('menu_tb')
-                    .insert(testMenuItems)
+                    .into('users_tb')
+                    .insert(testUsers)
+                    .then(() => 
+                        db
+                         .into('menu_tb')
+                         .insert(testItems)
+                    )
             })
 
             it('responds with 204 and updates the menu item', () => {
                 const idToUpdate = 1
                 const updatedMenuItem = {
-                    ...testMenuItems[idToUpdate - 1],
+                    ...testItems[idToUpdate - 1],
                     name: "Updated Menu Item Name"
                 }
                 const expectedMenuItem = {
@@ -241,12 +291,14 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     .patch(`/menu/${idToUpdate}`)
                     .send(updatedMenuItem)
-                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', makeAuthHeader(testUsers[0]))
                     .expect(204)
                     .then(res => 
                         supertest(app)
                             .get(`/menu/${idToUpdate}`)
-                            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            .set('Authorization', makeAuthHeader(testUsers[0]))
                             .expect(expectedMenuItem)
                     )
             })

@@ -6,6 +6,7 @@ const xss = require('xss')
 const MenuService = require('./menu-service')
 const validate = require('url-validator')
 const logger = require('../logger')
+const { requireAuth } = require('../middleware/basic-auth')
 
 
 const serializeMenuItem = item => ({
@@ -22,6 +23,8 @@ const serializeMenuItem = item => ({
 
 menuRouter
     .route('/menu')
+    //ALL
+    .all(requireAuth)
     //GET
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
@@ -102,6 +105,7 @@ menuRouter
 menuRouter
     .route('/menu/:item_id')
     //ALL
+    .all(requireAuth)
     .all((req, res, next) => {
         MenuService.getById(
             req.app.get('db'),
