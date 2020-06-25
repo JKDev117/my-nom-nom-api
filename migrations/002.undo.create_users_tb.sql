@@ -1,0 +1,5 @@
+ALTER TABLE menu_tb
+    DROP COLUMN IF EXISTS user_id;
+
+DROP TABLE IF EXISTS users_tb CASCADE;
+
