@@ -48,8 +48,30 @@ describe('Menu Endpoints', function(){
                 .get(`/menu/1`)
                 .expect(401, { error: `Missing basic token` })
             })
+            it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
+                  const userNoCreds = { user_name: '', password: '' }
+                  return supertest(app)
+                    .get(`/menu/1`)
+                    .set('Authorization', helpers.makeAuthHeader(userNoCreds))
+                    .expect(401, { error: `Unauthorized request` })
+            })
+            it(`responds 401 'Unauthorized request' when invalid user`, () => {
+                   const userInvalidCreds = { user_name: 'nonexistent-username', password: 'doesnotexist' }
+                   return supertest(app)
+                     .get(`/menu/1`)
+                     .set('Authorization', helpers.makeAuthHeader(userInvalidCreds))
+                     .expect(401, { error: `Unauthorized request` })
+            })
+            it(`responds 401 'Unauthorized request' when invalid password`, () => {
+                  const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
+                  return supertest(app)
+                    .get(`/menu/1`)
+                    .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
+                    .expect(401, { error: `Unauthorized request` })
+            })
+          
           })
-    })
+    })//end describe 'Protected endpoints'
 
 
     //describe 'GET /menu'
@@ -182,6 +204,8 @@ describe('Menu Endpoints', function(){
     //describe 'GET /menu/:item_id'
     describe.only('GET /menu/:item_id', () => {
         context('Given no menu items', () => {
+            beforeEach(() => db.into('users_tb').insert(testUsers))
+            
             it('responds with 404', () => {
                 const itemId = 123456
                 return supertest(app)
