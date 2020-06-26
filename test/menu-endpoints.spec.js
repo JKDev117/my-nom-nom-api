@@ -148,15 +148,25 @@ describe('Menu Endpoints', function(){
     //describe 'POST /menu'
     describe('POST /menu', () => {
 
+        beforeEach(() => db.into('users_tb').insert(testUsers))
 
+        it(`responds 401 'Unauthorized request' when invalid password`, () => {
+              const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
+              return supertest(app)
+                .post('/menu')
+                .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
+                .expect(401, { error: `Unauthorized request` })
+        })
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
-            
+            const testUser = testUsers[0]
+            console.log(testUser)
             const newMenuItem = {
                 name: "New Menu Item",
+                user_id: testUser.id,
                 category: "Breakfast"
             }
-
+            console.log(newMenuItem)
             return supertest(app)
                 .post('/menu')
                 .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
@@ -200,6 +210,7 @@ describe('Menu Endpoints', function(){
         })
         
         it('removes XSS attack content from response', () => {
+            const testUser = helpers.makeUsers()[0]
             const {
                 maliciousMenuItem,
                 expectedMenuItem
@@ -257,6 +268,8 @@ describe('Menu Endpoints', function(){
 
     describe(`DELETE /menu/:item_id`, () => {
         context('Given no menu items', () => {
+            beforeEach(() => db.into('users_tb').insert(testUsers))
+
             it(`responds with 404`, () => {
                 const itemId = 123456
                 return supertest(app)
@@ -296,6 +309,8 @@ describe('Menu Endpoints', function(){
 
     describe(`PATCH /menu/:item_id`, () => {
         context('Given no menu items', () => {
+            beforeEach(() => db.into('users_tb').insert(testUsers))
+
             it('responds with 404', () => {
                 const itemId = 123456
                 return supertest(app)
