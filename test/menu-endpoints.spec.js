@@ -23,10 +23,10 @@ describe('Menu Endpoints', function(){
     after('disconnect from db', () => db.destroy())
 
     //before('clean the table', () => db('menu_tb').truncate())
-    before('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
+    before('cleanup', () => helpers.cleanTables(db))
 
     //afterEach('cleanup', () => db('menu_tb').truncate())
-    afterEach('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
+    afterEach('cleanup', () => helpers.cleanTables(db))
 
 
     //describe 'GET /menu'

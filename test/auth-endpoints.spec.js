@@ -7,7 +7,7 @@ const helpers = require('./test-helpers')
 describe.only('Auth Endpoints', function() {
   let db
 
-  const { testUsers } = helpers.makeArticlesFixtures()
+  const { testUsers } = helpers.makeUsers()
   const testUser = testUsers[0]
 
   before('make knex instance', () => {
@@ -24,7 +24,7 @@ describe.only('Auth Endpoints', function() {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe(`POST /api/auth/login`, () => {
+  describe(`POST /auth/login`, () => {
     beforeEach('insert users', () =>
       helpers.seedUsers(
         db,

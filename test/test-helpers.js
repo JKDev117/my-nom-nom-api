@@ -63,6 +63,14 @@ function makeItemsFixtures(){
     return { testUsers, testItems }
 }
 
+function cleanTables(db) {
+    return db.raw(
+      `TRUNCATE
+        menu_tb,
+        users_tb
+        RESTART IDENTITY CASCADE`
+    )
+}
 
 function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
@@ -127,10 +135,11 @@ module.exports = {
     makeMaliciousMenuItem,
     
     makeItemsFixtures,
+    cleanTables,
+    seedUsers,
     seedTables,
     seedMaliciousItem,
     makeAuthHeader,
-    seedUsers
 }
 
 
