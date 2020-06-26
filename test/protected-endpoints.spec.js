@@ -1,6 +1,6 @@
 const knex = require('knex')
 const app = require('../src/app')
-const helpers = require('./menu.fixtures')
+const helpers = require('./test-helpers')
 
 describe(`Protected endpoints`, () => {
     
