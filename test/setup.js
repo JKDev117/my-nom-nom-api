@@ -6,6 +6,8 @@
 //and to be able to add these functions
 //as globals inside tests
 
+process.env.JWT_SECRET = 'test-jwt-secret'
+
 require('dotenv').config()
 
 const { expect } = require('chai')
