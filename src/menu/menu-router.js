@@ -88,6 +88,8 @@ menuRouter
         newMenuItem.name = name
         */
 
+        newMenuItem.user_id = req.user.id
+
         MenuService.addMenuItem(
             req.app.get('db'),
             newMenuItem

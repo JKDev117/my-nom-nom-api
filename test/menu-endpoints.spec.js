@@ -1,6 +1,7 @@
 const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./menu.fixtures')
+const { expect } = require('chai')
 
 const {
     testUsers,
@@ -92,30 +93,46 @@ describe('Menu Endpoints', function(){
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const testUser = testUsers[0]
-            console.log(testUser)
+            //console.log(testUser)
             const newMenuItem = {
                 name: "New Menu Item",
-                user_id: testUser.id,
+                //user_id: testUser.id,
                 category: "Breakfast"
             }
             console.log(newMenuItem)
             return supertest(app)
                 .post('/menu')
                 .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                .send(newMenuItem)
                 //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                .send(newMenuItem)
                 .expect(201)
                 .expect(res => {
                     expect(res.body).to.have.property('id')
                     expect(res.body.name).to.eql(newMenuItem.name)
+                    expect(res.body.user_id).to.eql(testUser.id) //added
                     expect(res.body.category).to.eql(newMenuItem.category)
+                    expect(res.headers.location).to.eql(`/menu/${res.body.id}`)//added
                 })
-                .then(postRes => 
+                .then(postRes =>
+                    /* removed
                     supertest(app)
                         .get(`/menu/${postRes.body.id}`)
                         //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                         .expect(postRes.body)
+                    */
+                    //added next lines 125 - 134    
+                    db
+                        .from('menu_tb')
+                        .select('*')
+                        .where({id: postRes.body.id})
+                        .first()
+                        .then(row => {
+                            //console.log(row)
+                            expect(row.name).to.eql(newMenuItem.name)
+                            expect(row.category).to.eql(newMenuItem.category)
+                            expect(row.user_id).to.eql(testUser.id)
+                        })
                 )
         })
 
@@ -133,8 +150,8 @@ describe('Menu Endpoints', function(){
                 return supertest(app)
                     .post('/menu')
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .send(newMenuItem)
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .send(newMenuItem)
                     .expect(400, {
                         error: { message: `Missing '${field}' in request body`}
                     })
@@ -150,9 +167,9 @@ describe('Menu Endpoints', function(){
 
             return supertest(app)
                 .post('/menu')
-                .send(maliciousMenuItem)
                 //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                 .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                .send(maliciousMenuItem)
                 .expect(201)
                 .expect(response => {
                     //expect(response.body.name).to.eql(expectedMenuItem.name)
@@ -271,9 +288,9 @@ describe('Menu Endpoints', function(){
                 }
                 return supertest(app)
                     .patch(`/menu/${idToUpdate}`)
-                    .send(updatedMenuItem)
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    .send(updatedMenuItem)
                     .expect(204)
                     .then(res => 
                         supertest(app)
