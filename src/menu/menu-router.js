@@ -12,6 +12,7 @@ const { requireAuth } = require('../middleware/basic-auth')
 const serializeMenuItem = item => ({
     id: item.id,
     name: xss(item.name),
+    user_id: item.user_id,
     image_url: xss(item.image_url),
     calories: item.calories,
     carbs: item.carbs,
