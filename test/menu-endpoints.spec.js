@@ -1,20 +1,11 @@
 const knex = require('knex')
 const app = require('../src/app')
-const supertest = require('supertest')
-const { expect } = require('chai')
-
-//const { makeUsers, createMenu, makeMaliciousMenuItem, helpers.makeAuthHeader } = require('./menu.fixtures')
-//const testUsers = makeUsers()
-//const menuItems = createMenu(testUsers);
-
 const helpers = require('./menu.fixtures')
 
 const {
     testUsers,
     testItems,
 } = helpers.makeItemsFixtures()
-
-
 
 describe('Menu Endpoints', function(){
 
@@ -35,57 +26,6 @@ describe('Menu Endpoints', function(){
 
     //afterEach('cleanup', () => db('menu_tb').truncate())
     afterEach('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
-
-
-    describe(`Protected endpoints`, () => {
-          beforeEach('insert menu items', () =>
-            helpers.seedTables(db, testUsers, testItems)
-          )
-
-          const protectedEndpoints = [
-              {
-                name: 'GET /menu/:item_id',
-                path: '/menu/1'
-              },
-              {
-                name: 'GET /menu',
-                path: '/menu'
-              },
-            ]
-        
-          protectedEndpoints.forEach(endpoint => {
-            describe(endpoint.name, () => {
-                it(`responds with 401 'Missing basic token' when no basic token`, () => {
-                  return supertest(app)
-                    .get(endpoint.path)
-                    .expect(401, { error: `Missing basic token` })
-                })
-                it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
-                      const userNoCreds = { user_name: '', password: '' }
-                      return supertest(app)
-                        .get(endpoint.path)
-                        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
-                        .expect(401, { error: `Unauthorized request` })
-                })
-                it(`responds 401 'Unauthorized request' when invalid user`, () => {
-                       const userInvalidCreds = { user_name: 'nonexistent-username', password: 'doesnotexist' }
-                       return supertest(app)
-                         .get(endpoint.path)
-                         .set('Authorization', helpers.makeAuthHeader(userInvalidCreds))
-                         .expect(401, { error: `Unauthorized request` })
-                })
-                it(`responds 401 'Unauthorized request' when invalid password`, () => {
-                      const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
-                      return supertest(app)
-                        .get(endpoint.path)
-                        .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
-                        .expect(401, { error: `Unauthorized request` })
-                })
-              
-              })
-          })
-
-    })//end describe 'Protected endpoints'
 
 
     //describe 'GET /menu'
@@ -149,14 +89,6 @@ describe('Menu Endpoints', function(){
     describe('POST /menu', () => {
 
         beforeEach(() => db.into('users_tb').insert(testUsers))
-
-        it(`responds 401 'Unauthorized request' when invalid password`, () => {
-              const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
-              return supertest(app)
-                .post('/menu')
-                .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
-                .expect(401, { error: `Unauthorized request` })
-        })
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const testUser = testUsers[0]
@@ -351,15 +283,9 @@ describe('Menu Endpoints', function(){
                             .expect(expectedMenuItem)
                     )
             })
-
-
-
         })//end context 'Given there are menu items in the database'
 
     }) //end describe 'PATCH /menu/:item_id'
-
-
-
 
 })//end describe 'Menu Endpoints'
 
