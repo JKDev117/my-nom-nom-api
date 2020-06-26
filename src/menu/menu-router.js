@@ -6,7 +6,8 @@ const xss = require('xss')
 const MenuService = require('./menu-service')
 const validate = require('url-validator')
 const logger = require('../logger')
-const { requireAuth } = require('../middleware/basic-auth')
+//const { requireAuth } = require('../middleware/basic-auth')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 
 const serializeMenuItem = item => ({
