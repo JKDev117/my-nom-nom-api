@@ -6,7 +6,6 @@ const { expect } = require('chai')
 //const { makeUsers, createMenu, makeMaliciousMenuItem, makeAuthHeader } = require('./menu.fixtures')
 //const testUsers = makeUsers()
 //const menuItems = createMenu(testUsers);
-//const { maliciousMenuItem, expectedMenuItem } = makeMaliciousMenuItem(testUsers[0])
 
 const helpers = require('./menu.fixtures')
 
@@ -53,14 +52,7 @@ describe('Menu Endpoints', function(){
         context('Given there are menu items in the database', () => {
 
             beforeEach('insert menu items', () => {
-                return db
-                    .into('users_tb')
-                    .insert(testUsers)
-                    .then(() => 
-                        db
-                         .into('menu_tb')
-                         .insert(testItems)
-                    )
+                helpers.seedTables(db, testUsers, testItems)
             })
 
             it('GET /menu responds with 200 and all of the menu items', () => {
@@ -73,15 +65,14 @@ describe('Menu Endpoints', function(){
         }) //end context 'Given there are menu items in the database'
 
         context('Given an XSS attack menu item', () => {
+            const testUser = helpers.makeUsers()[0]
+            const {
+                maliciousMenuItem,
+                expectedMenuItem
+            } = helpers.makeMaliciousMenuItem(testUser)
+
             beforeEach('insert malicious menu item', () => {
-                return db
-                    .into('users_tb')
-                    .insert([testUsers[0]])
-                    .then(() => 
-                        db
-                         .into('menu_tb')
-                         .insert([maliciousMenuItem])
-                    )        
+                return helpers.seedMaliciousItem(db, testUser, maliciousMenuItem)    
             })
             
             it('removes XSS attack content', () => {
@@ -152,6 +143,11 @@ describe('Menu Endpoints', function(){
         })
         
         it('removes XSS attack content from response', () => {
+            const {
+                maliciousMenuItem,
+                expectedMenuItem
+            } = helpers.makeMaliciousMenuItem(testUser)
+
             return supertest(app)
                 .post('/menu')
                 .send(maliciousMenuItem)
@@ -184,14 +180,7 @@ describe('Menu Endpoints', function(){
             //const testMenuItems =  createMenu()
 
             beforeEach('insert menu items', () => {
-                return db
-                    .into('users_tb')
-                    .insert(testUsers)
-                    .then(() => 
-                        db
-                         .into('menu_tb')
-                         .insert(testItems)
-                    )
+                helpers.seedTables(db, testUsers, testItems)
             })
 
             it('responds with 200 and the specified menu item', () => {
@@ -223,14 +212,7 @@ describe('Menu Endpoints', function(){
             //const testMenuItems = createMenu()
             
             beforeEach('insert menu items', () => {
-                return db
-                    .into('users_tb')
-                    .insert(testUsers)
-                    .then(() => 
-                        db
-                         .into('menu_tb')
-                         .insert(testItems)
-                    )
+                helpers.seedTables(db, testUsers, testItems)
             })
 
             it('responds with 204 and removes the menu item', () => {
@@ -269,14 +251,7 @@ describe('Menu Endpoints', function(){
             //const testMenuItems = createMenu()
 
             beforeEach('insert menu items', () => {
-                return db
-                    .into('users_tb')
-                    .insert(testUsers)
-                    .then(() => 
-                        db
-                         .into('menu_tb')
-                         .insert(testItems)
-                    )
+                helpers.seedTables(db, testUsers, testItems)
             })
 
             it('responds with 204 and updates the menu item', () => {

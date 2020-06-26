@@ -60,6 +60,29 @@ function makeItemsFixtures(){
     return { testUsers, testItems }
 }
 
+function seedTables(db, users, items) {
+    return db
+      .into('users_tb')
+      .insert(users)
+      .then(() =>
+        db
+          .into('menu_tb')
+          .insert(items)
+      )
+}
+
+function seedMaliciousItem(db, user, item) {
+    return db
+      .into('users_tb')
+      .insert([user])
+      .then(() =>
+        db
+          .into('menu_tb')
+          .insert([item])
+      )
+}
+
+
 function makeAuthHeader(user){
     const token = Buffer.from(`${user.user_name}:${user.password}`).toString('base64')
     return `Basic ${token}`
@@ -72,6 +95,8 @@ module.exports = {
     makeMaliciousMenuItem,
     
     makeItemsFixtures,
+    seedTables,
+    seedMaliciousItem,
     makeAuthHeader,
 }
 
