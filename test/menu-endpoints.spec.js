@@ -37,46 +37,62 @@ describe('Menu Endpoints', function(){
     afterEach('cleanup', () => db.raw(`TRUNCATE menu_tb, users_tb RESTART IDENTITY CASCADE`))
 
 
-    describe.only(`Protected endpoints`, () => {
+    describe(`Protected endpoints`, () => {
           beforeEach('insert menu items', () =>
             helpers.seedTables(db, testUsers, testItems)
           )
+
+          const protectedEndpoints = [
+              {
+                name: 'GET /menu/:item_id',
+                path: '/menu/1'
+              },
+              {
+                name: 'GET /menu',
+                path: '/menu'
+              },
+            ]
         
-          describe(`GET /menu/:item_id`, () => {
-            it(`responds with 401 'Missing basic token' when no basic token`, () => {
-              return supertest(app)
-                .get(`/menu/1`)
-                .expect(401, { error: `Missing basic token` })
-            })
-            it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
-                  const userNoCreds = { user_name: '', password: '' }
+          protectedEndpoints.forEach(endpoint => {
+            describe(endpoint.name, () => {
+                it(`responds with 401 'Missing basic token' when no basic token`, () => {
                   return supertest(app)
-                    .get(`/menu/1`)
-                    .set('Authorization', helpers.makeAuthHeader(userNoCreds))
-                    .expect(401, { error: `Unauthorized request` })
-            })
-            it(`responds 401 'Unauthorized request' when invalid user`, () => {
-                   const userInvalidCreds = { user_name: 'nonexistent-username', password: 'doesnotexist' }
-                   return supertest(app)
-                     .get(`/menu/1`)
-                     .set('Authorization', helpers.makeAuthHeader(userInvalidCreds))
-                     .expect(401, { error: `Unauthorized request` })
-            })
-            it(`responds 401 'Unauthorized request' when invalid password`, () => {
-                  const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
-                  return supertest(app)
-                    .get(`/menu/1`)
-                    .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
-                    .expect(401, { error: `Unauthorized request` })
-            })
-          
+                    .get(endpoint.path)
+                    .expect(401, { error: `Missing basic token` })
+                })
+                it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
+                      const userNoCreds = { user_name: '', password: '' }
+                      return supertest(app)
+                        .get(endpoint.path)
+                        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
+                        .expect(401, { error: `Unauthorized request` })
+                })
+                it(`responds 401 'Unauthorized request' when invalid user`, () => {
+                       const userInvalidCreds = { user_name: 'nonexistent-username', password: 'doesnotexist' }
+                       return supertest(app)
+                         .get(endpoint.path)
+                         .set('Authorization', helpers.makeAuthHeader(userInvalidCreds))
+                         .expect(401, { error: `Unauthorized request` })
+                })
+                it(`responds 401 'Unauthorized request' when invalid password`, () => {
+                      const userInvalidPass = { user_name: testUsers[0].user_name, password: 'wrong-password' }
+                      return supertest(app)
+                        .get(endpoint.path)
+                        .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
+                        .expect(401, { error: `Unauthorized request` })
+                })
+              
+              })
           })
+
     })//end describe 'Protected endpoints'
 
 
     //describe 'GET /menu'
     describe('GET /menu', () => {
         context('Given no menu items', () => {
+            beforeEach(() => db.into('users_tb').insert(testUsers))
+
             it('responds with 200 and an empty list', () => {
                 return supertest(app)
                     //GET
@@ -132,7 +148,10 @@ describe('Menu Endpoints', function(){
     //describe 'POST /menu'
     describe('POST /menu', () => {
 
+
+
         it('creates a menu item, responding with 201 and the new menu item', function() {
+            
             const newMenuItem = {
                 name: "New Menu Item",
                 category: "Breakfast"
@@ -140,9 +159,9 @@ describe('Menu Endpoints', function(){
 
             return supertest(app)
                 .post('/menu')
+                .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                 .send(newMenuItem)
                 //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                 .expect(201)
                 .expect(res => {
                     expect(res.body).to.have.property('id')
@@ -171,9 +190,9 @@ describe('Menu Endpoints', function(){
 
                 return supertest(app)
                     .post('/menu')
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                     .send(newMenuItem)
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                     .expect(400, {
                         error: { message: `Missing '${field}' in request body`}
                     })
@@ -202,7 +221,7 @@ describe('Menu Endpoints', function(){
 
 
     //describe 'GET /menu/:item_id'
-    describe.only('GET /menu/:item_id', () => {
+    describe('GET /menu/:item_id', () => {
         context('Given no menu items', () => {
             beforeEach(() => db.into('users_tb').insert(testUsers))
             
