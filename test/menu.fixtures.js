@@ -1,3 +1,6 @@
+const bcrypt = require('bcryptjs')
+
+
 function makeUsers(){
     return [
         {
@@ -60,25 +63,54 @@ function makeItemsFixtures(){
     return { testUsers, testItems }
 }
 
+
+function seedUsers(db, users) {
+    const preppedUsers = users.map(user => ({
+        ...user,
+        password: bcrypt.hashSync(user.password, 12)
+        }))
+    return db.into('users_tb').insert(preppedUsers)
+    .then(() =>
+        // update the auto sequence to stay in sync
+        db.raw(
+            `SELECT setval('users_tb_id_seq', ?)`,
+            [users[users.length - 1].id],
+        )
+    )
+}
+
+
 function seedTables(db, users, items) {
-    return db
+    /*return db
       .into('users_tb')
       .insert(users)
       .then(() =>
         db
           .into('menu_tb')
           .insert(items)
-      )
+      )*/
+    //use a transaction to group the queries and auto rollback on any failure  
+    return db.transaction(async trx => {
+        await seedUsers(trx, users)
+        await trx.into('menu_tb').insert(items)
+        //update the auto sequence to match the forced id values
+        await trx.raw(
+            `SELECT setval('menu_tb_id_seq', ?)`,
+            [items[items.length -1].id],
+        ) 
+    })  
 }
 
+
 function seedMaliciousItem(db, user, item) {
-    return db
+    /*return db
       .into('users_tb')
-      .insert([user])
-      .then(() =>
-        db
-          .into('menu_tb')
-          .insert([item])
+      .insert([user])*/
+      return seedUsers(db, [user])
+         .then(() =>
+            db
+              .into('menu_tb')
+              .insert([item])
       )
 }
 
@@ -98,7 +130,9 @@ module.exports = {
     seedTables,
     seedMaliciousItem,
     makeAuthHeader,
+    seedUsers
 }
+
 
 
 

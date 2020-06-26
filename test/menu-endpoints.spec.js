@@ -32,7 +32,8 @@ describe('Menu Endpoints', function(){
     //describe 'GET /menu'
     describe('GET /menu', () => {
         context('Given no menu items', () => {
-            beforeEach(() => db.into('users_tb').insert(testUsers))
+            //beforeEach(() => db.into('users_tb').insert(testUsers))
+            beforeEach(() => helpers.seedUsers(db, testUsers))
 
             it('responds with 200 and an empty list', () => {
                 return supertest(app)
@@ -89,7 +90,8 @@ describe('Menu Endpoints', function(){
     //describe 'POST /menu'
     describe('POST /menu', () => {
 
-        beforeEach(() => db.into('users_tb').insert(testUsers))
+        //beforeEach(() => db.into('users_tb').insert(testUsers))
+        beforeEach(() => helpers.seedUsers(db, testUsers))
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const testUser = testUsers[0]
@@ -183,8 +185,9 @@ describe('Menu Endpoints', function(){
     //describe 'GET /menu/:item_id'
     describe('GET /menu/:item_id', () => {
         context('Given no menu items', () => {
-            beforeEach(() => db.into('users_tb').insert(testUsers))
-            
+            //beforeEach(() => db.into('users_tb').insert(testUsers))
+            beforeEach(() => helpers.seedUsers(db, testUsers))
+
             it('responds with 404', () => {
                 const itemId = 123456
                 return supertest(app)
@@ -202,6 +205,7 @@ describe('Menu Endpoints', function(){
                 helpers.seedTables(db, testUsers, testItems)
             )
 
+
             it('responds with 200 and the specified menu item', () => {
                 const itemId = 1
                 const expectedMenuItem = testItems[itemId - 1]
@@ -217,7 +221,9 @@ describe('Menu Endpoints', function(){
 
     describe(`DELETE /menu/:item_id`, () => {
         context('Given no menu items', () => {
-            beforeEach(() => db.into('users_tb').insert(testUsers))
+            //beforeEach(() => db.into('users_tb').insert(testUsers))
+            beforeEach(() => helpers.seedUsers(db, testUsers))
+
 
             it(`responds with 404`, () => {
                 const itemId = 123456
@@ -258,7 +264,8 @@ describe('Menu Endpoints', function(){
 
     describe(`PATCH /menu/:item_id`, () => {
         context('Given no menu items', () => {
-            beforeEach(() => db.into('users_tb').insert(testUsers))
+            //beforeEach(() => db.into('users_tb').insert(testUsers))
+            beforeEach(() => helpers.seedUsers(db, testUsers))
 
             it('responds with 404', () => {
                 const itemId = 123456
