@@ -2,7 +2,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Users Endpoints', function() {
+describe('Users Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsers()
@@ -22,7 +22,7 @@ describe.only('Users Endpoints', function() {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe(`POST /users`, () => {
+  describe.only(`POST /users`, () => {
     context(`User Validation`, () => {
       beforeEach('insert users', () =>
         helpers.seedUsers(
@@ -51,6 +51,35 @@ describe.only('Users Endpoints', function() {
               error: `Missing '${field}' in request body`,
             })
         })
+        it(`responds 400 'Password must be longer than 8 characters' when empty password`, () => {
+            const userShortPassword = {
+              first_name: 'test first_name',
+              last_name: 'test last_name',
+              user_name: 'test user_name',
+              password: '1234567',
+            }
+            return supertest(app)
+              .post('/users')
+              .send(userShortPassword)
+              .expect(400, { error: `Password must be longer than 8 characters` })
+        })
+        it(`responds 400 'Password must be less than 72 characters' when long password`, () => {
+            const userLongPassword = {
+              first_name: 'test first_name',
+              last_name: 'test last_name',
+              user_name: 'test user_name',
+              password: '*'.repeat(73),
+            }
+             //console.log(userLongPassword)
+             //console.log(userLongPassword.password.length)
+             console.log("userLongPassword.password", userLongPassword.password)
+            return supertest(app)
+              .post('/users')
+              .send(userLongPassword)
+              .expect(400, { error: `Password must be less than 72 characters` })
+        })  
+
+
       })
     })
   })
