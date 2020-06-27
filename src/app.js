@@ -10,6 +10,7 @@ const {v4:uuid} = require('uuid')
 const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
 const authRouter = require('./auth/auth-router')
+const usersRouter = require('./users/users-router')
 const validateBearerToken = require('./validate-bearer-token')
 
 const app = express()
@@ -43,6 +44,7 @@ app.use(function errorHandler(error, req, res, next) {
 
 app.use(menuRouter)
 app.use(authRouter)
+app.use(usersRouter)
 
 app.get('/', (req, res) => {
   //console.log('hi')
