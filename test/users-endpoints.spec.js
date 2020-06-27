@@ -1,8 +1,10 @@
 const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
+const bcrypt = require('bcryptjs')
+const { expect } = require('chai')
 
-describe.only('Users Endpoints', function() {
+describe('Users Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsers()
@@ -132,7 +134,7 @@ describe.only('Users Endpoints', function() {
         })
     })//end context `User Validation`
 
-    context.only(`Happy path`, () => {
+    context(`Happy path`, () => {
        it(`responds 201, serialized user, storing bcryped password`, () => {
          const newUser = {
            first_name: 'test first_name',
@@ -163,17 +165,21 @@ describe.only('Users Endpoints', function() {
                 .where({ id: res.body.id })
                 .first()
                 .then(row => {
-                  expect(row.user_name).to.eql(newUser.user_name)
                   expect(row.first_name).to.eql(newUser.first_name)
                   expect(row.last_name).to.eql(newUser.last_name)
+                  expect(row.user_name).to.eql(newUser.user_name)
                   //const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
                   const expectedDate = new Date().toLocaleString('en')
                   const actualDate = new Date(row.date_created).toLocaleString()
                   expect(actualDate).to.eql(expectedDate)
+                  return bcrypt.compare(newUser.password, row.password)
+                })
+                .then(compareMatch => {
+                    expect(compareMatch).to.be.true
                 })
            )
 
-      })
+      }) //end it `responds 201, serialized user, storing bcryped password`
     })//end context 'Happy path'
 
   }) //end describe 'POST /users'

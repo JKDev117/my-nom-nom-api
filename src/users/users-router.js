@@ -32,27 +32,31 @@ usersRouter
            .then(hasUserWithUserName => {
              if (hasUserWithUserName)
                return res.status(400).json({ error: `Username already taken` })
-     
-             const newUser = {
-               first_name,
-               last_name,
-               user_name,
-               password,
-               date_created: 'now()',
-             }
-      
-             return UsersService.insertUser(
-               req.app.get('db'),
-               newUser
-             )
-               .then(user => {
-                 res
-                   .status(201)
-                   .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                   .json(UsersService.serializeUser(user))
-               })
+
+               return UsersService.hashPassword(password)
+                .then(hashedPassword => {
+                  const newUser = {
+                    first_name,
+                    last_name,
+                    user_name,
+                    password: hashedPassword,
+                    date_created: 'now()',
+                  }
+           
+                  return UsersService.insertUser(
+                    req.app.get('db'),
+                    newUser
+                  )
+                    .then(user => {
+                      res
+                        .status(201)
+                        .location(path.posix.join(req.originalUrl, `/${user.id}`))
+                        .json(UsersService.serializeUser(user))
+                    })
+                }) 
+             
            })
            .catch(next)     
-  })
+  })//end post '/users'
 
 module.exports = usersRouter
