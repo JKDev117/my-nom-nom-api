@@ -30,7 +30,7 @@ menuRouter
     //GET
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
-        MenuService.getAllMenuItems(knexInstance)
+        MenuService.getAllMenuItems(knexInstance, req.user.id)
             .then(items => {
                 res.json(items.map(item => serializeMenuItem(item)))
             })
@@ -113,7 +113,8 @@ menuRouter
     .all((req, res, next) => {
         MenuService.getById(
             req.app.get('db'),
-            req.params.item_id
+            req.params.item_id,
+            req.user.id
         )
         .then(item => {
             if(!item){
@@ -135,9 +136,9 @@ menuRouter
         //console.log(req.params)
         MenuService.deleteMenuItem(
             req.app.get('db'),
-            req.params.item_id
+            req.params.item_id,
+            req.user.id
         )
-        
             .then(() => {
                 res.status(204).end()
             })
@@ -201,7 +202,8 @@ menuRouter
         MenuService.updateMenuItem(
             req.app.get('db'),
             req.params.item_id,
-            itemToUpdate
+            itemToUpdate,
+            req.user.id
         )
             .then(numRowsAffected => {
                 res.status(204).end()
