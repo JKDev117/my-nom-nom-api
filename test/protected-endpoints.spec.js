@@ -57,7 +57,12 @@ describe(`Protected endpoints`, () => {
           name: 'DELETE /menu/:item_id',
           path: '/menu/1',
           method: supertest(app).delete,  
-        }
+        },
+        {
+          name: 'POST /auth/refresh',
+          path: '/auth/refresh',
+          method: supertest(app).post,
+        },
     ]
   
     protectedEndpoints.forEach(endpoint => {

@@ -94,6 +94,32 @@ describe('Auth Endpoints', function() {
 
   })//end describe 'POST /auth/login'
 
+  describe(`POST /api/auth/refresh`, () => {
+    beforeEach('insert users', () =>
+      helpers.seedUsers(
+        db,
+        testUsers,
+      )
+    )
+
+    it(`responds 200 and JWT auth token using secret`, () => {
+      const expectedToken = jwt.sign(
+        { user_id: testUser.id },
+        process.env.JWT_SECRET,
+        {
+          subject: testUser.user_name,
+          expiresIn: process.env.JWT_EXPIRY,
+          algorithm: 'HS256',
+        }
+      )
+      return supertest(app)
+        .post('/auth/refresh')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .expect(200, {
+          authToken: expectedToken,
+        })
+    })
+  })//end describe `POST /auth/refresh`
 
 })//end describe 'Auth Endpoints'
 
