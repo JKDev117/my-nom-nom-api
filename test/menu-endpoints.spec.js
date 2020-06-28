@@ -15,7 +15,7 @@ describe('Menu Endpoints', function(){
     before('make knex instance', () => {
         db = knex({
             client: 'pg',
-            connection: process.env.TEST_DB_URL,
+            connection: process.env.TEST_DATABASE_URL,
         })
         app.set('db', db)
     })
@@ -95,13 +95,11 @@ describe('Menu Endpoints', function(){
 
         it('creates a menu item, responding with 201 and the new menu item', function() {
             const testUser = testUsers[0]
-            //console.log(testUser)
             const newMenuItem = {
                 name: "New Menu Item",
                 //user_id: testUser.id,
                 category: "Breakfast"
             }
-            console.log(newMenuItem)
             return supertest(app)
                 .post('/menu')
                 .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
@@ -130,7 +128,6 @@ describe('Menu Endpoints', function(){
                         .where({id: postRes.body.id})
                         .first()
                         .then(row => {
-                            //console.log(row)
                             expect(row.name).to.eql(newMenuItem.name)
                             expect(row.category).to.eql(newMenuItem.category)
                             expect(row.user_id).to.eql(testUser.id)

@@ -47,7 +47,6 @@ app.use(authRouter)
 app.use(usersRouter)
 
 app.get('/', (req, res) => {
-  //console.log('hi')
   res.send('Hello, world!')
 })
 

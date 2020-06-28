@@ -66,7 +66,6 @@ menuRouter
           }
         })
         
-        //console.log('image url: ', image_url)
 
         if(image_url!=undefined && image_url.length > 0 && !validate(image_url)){
             logger.error(`url must be a valid URL`)
@@ -133,7 +132,6 @@ menuRouter
     )
     //DELETE
     .delete((req, res, next) => {
-        //console.log(req.params)
         MenuService.deleteMenuItem(
             req.app.get('db'),
             req.params.item_id,
@@ -148,7 +146,6 @@ menuRouter
     .patch(bodyParser, (req, res, next) => {
         const { name, image_url, calories, carbs, protein, fat, category } = req.body
         const itemToUpdate = { name, image_url, calories, carbs, protein, fat, category }
-        //console.log('itemToUpdate: ', itemToUpdate)
         const numberOfValues = Object.values(itemToUpdate).filter(Boolean).length
 
         
@@ -179,8 +176,6 @@ menuRouter
         array.forEach((element, i) => {
           if(element!=undefined && element!=null && element.length > 0 && (!Number.isInteger(element) || element < 0)){
             logger.error(`calories, carbs, protein, or fat category must be a NUMBER greater than zero`)
-            console.log(element)
-            console.log(typeof(element))
             return res
                 .status(400)
                 .json({

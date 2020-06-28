@@ -8,13 +8,12 @@ describe('Users Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsers()
-  //console.log(testUsers)
   const testUser = testUsers[0]
 
   before('make knex instance', () => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: process.env.TEST_DATABASE_URL,
     })
     app.set('db', db)
   })
@@ -75,9 +74,6 @@ describe('Users Endpoints', function() {
             user_name: 'test user_name',
             password: '*'.repeat(73),
           }
-            //console.log(userLongPassword)
-            //console.log(userLongPassword.password.length)
-            console.log("userLongPassword.password", userLongPassword.password)
           return supertest(app)
             .post('/users')
             .send(userLongPassword)
