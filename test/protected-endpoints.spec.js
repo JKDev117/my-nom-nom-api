@@ -2,7 +2,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only(`Protected endpoints`, () => {
+describe(`Protected endpoints`, () => {
     
     let db
 
@@ -37,14 +37,29 @@ describe.only(`Protected endpoints`, () => {
           method: supertest(app).get,
         },
         {
-          name: 'POST /menu',
-          path: '/menu',
-          method: supertest(app).post,  
-          },
-        {
           name: 'GET /menu/:item_id',
           path: '/menu/1',
           method: supertest(app).get,
+        },
+        {
+          name: 'GET /plan',
+          path: '/plan',
+          method: supertest(app).get,
+        },
+        {
+          name: 'POST /auth/refresh',
+          path: '/auth/refresh',
+          method: supertest(app).post,
+        },
+        {
+          name: 'POST /menu',
+          path: '/menu',
+          method: supertest(app).post,  
+        },
+        {
+          name: 'POST /plan',
+          path: '/plan',
+          method: supertest(app).post,
         },
         {
           name: 'PATCH /menu/:item_id',
@@ -55,16 +70,6 @@ describe.only(`Protected endpoints`, () => {
           name: 'DELETE /menu/:item_id',
           path: '/menu/1',
           method: supertest(app).delete,  
-        },
-        {
-          name: 'POST /auth/refresh',
-          path: '/auth/refresh',
-          method: supertest(app).post,
-        },
-        {
-          name: 'POST /plan',
-          path: '/plan',
-          method: supertest(app).post,
         },
     ]
   

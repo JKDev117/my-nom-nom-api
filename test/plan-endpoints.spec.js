@@ -28,28 +28,26 @@ describe.only('Plan Endpoints', function(){
 
     afterEach('cleanup', () => helpers.cleanTables(db))
 
-    /*
+    
     //describe 'GET /menu'
-    describe('GET /menu', () => {
-        context('Given no menu items', () => {
+    describe.only('GET /plan', () => {
+        context('Given no plan items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
-            beforeEach(() => helpers.seedUsers(db, testUsers))
+            beforeEach(() => helpers.seedTables(db, testUsers, testItems))
 
             it('responds with 200 and an empty list', () => {
                 return supertest(app)
                     //GET
-                    .get('/menu')
+                    .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                     .expect(200, [])
             })
         })//End context 'Given no menu items'
+        /*
+        context('Given there are meal plan items in the database', () => {
 
-        context('Given there are menu items in the database', () => {
-
-            beforeEach('insert menu items', () => 
-                helpers.seedTables(db, testUsers, testItems)
-            )
+            beforeEach(() => helpers.seedPlan(db, testUsers, testItems, testPlanItem))
 
             it('GET /menu responds with 200 and all of the menu items', () => {
                 return supertest(app)
@@ -83,9 +81,9 @@ describe.only('Plan Endpoints', function(){
                     })
             })
         })//end context 'Given an XSS attack menu item'
-
+        */
     })//end describe 'GET /menu'  
-    */
+    
     
     //describe 'POST /plan'
     describe('POST /plan', () => {

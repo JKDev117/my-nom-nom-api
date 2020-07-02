@@ -28,16 +28,14 @@ planRouter
     //ALL
     .all(requireAuth)
     //GET
-    /*
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
-        MenuService.getAllMenuItems(knexInstance, req.user.id)
+        PlanService.getAllPlanItems(knexInstance, req.user.id)
             .then(items => {
                 res.json(items.map(item => serializeMenuItem(item)))
             })
             .catch(next)
-    })*/
-
+    })
     //POST
     .post(bodyParser, (req, res, next) => {
         const { user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
