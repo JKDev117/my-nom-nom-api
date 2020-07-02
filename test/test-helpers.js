@@ -32,7 +32,16 @@ function createMenu(users){
 
 function createPlanItem(users){
     return [
-        {id: 1, name: "Sausage, Eggs, Biscuit, & Hashbrowns", user_id: users[0].id, image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", calories: 750, carbs: 53, protein: 25, fat: 49, category: "Breakfast"},
+        { id: 1, 
+          name: "Sausage, Eggs, Biscuit, & Hashbrowns", 
+          user_id: users[0].id, 
+          image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", 
+          calories: 750, 
+          carbs: 53, 
+          protein: 25, 
+          fat: 49, 
+          category: "Breakfast"
+        }
     ]
 }
 
@@ -118,6 +127,12 @@ function seedTables(db, users, items) {
         ) 
     })  
 }
+
+function seedPlan(db, users, items, plan_item) {
+    return seedTables(db, users, items)
+        .then(() => db.into('plan_tb').insert(plan_item))
+}
+
 
 
 function seedMaliciousItem(db, user, item) {

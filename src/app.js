@@ -11,6 +11,7 @@ const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
 const authRouter = require('./auth/auth-router')
 const usersRouter = require('./users/users-router')
+const planRouter = require('./plan/plan-router')
 const validateBearerToken = require('./validate-bearer-token')
 
 const app = express()
@@ -45,7 +46,7 @@ app.use(function errorHandler(error, req, res, next) {
 app.use(menuRouter)
 app.use(authRouter)
 app.use(usersRouter)
-//app.use(planRouter)
+app.use(planRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello, world!')

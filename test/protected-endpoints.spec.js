@@ -2,13 +2,14 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe(`Protected endpoints`, () => {
+describe.only(`Protected endpoints`, () => {
     
     let db
 
     const {
         testUsers,
         testItems,
+        testPlanItem,
     } = helpers.makeItemsFixtures()
 
     before('make knex instance', () => {
@@ -21,12 +22,9 @@ describe(`Protected endpoints`, () => {
 
     after('disconnect from db', () => db.destroy())
 
-    //before('clean the table', () => db('menu_tb').truncate())
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => db('menu_tb').truncate())
     afterEach('cleanup', () => helpers.cleanTables(db))
-
 
     beforeEach('insert menu items', () =>
       helpers.seedTables(db, testUsers, testItems)
@@ -61,6 +59,11 @@ describe(`Protected endpoints`, () => {
         {
           name: 'POST /auth/refresh',
           path: '/auth/refresh',
+          method: supertest(app).post,
+        },
+        {
+          name: 'POST /plan',
+          path: '/plan',
           method: supertest(app).post,
         },
     ]

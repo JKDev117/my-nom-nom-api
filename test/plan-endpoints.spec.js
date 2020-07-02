@@ -24,10 +24,8 @@ describe.only('Plan Endpoints', function(){
 
     after('disconnect from db', () => db.destroy())
 
-    //before('clean the table', () => db('menu_tb').truncate())
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => db('menu_tb').truncate())
     afterEach('cleanup', () => helpers.cleanTables(db))
 
     /*
@@ -91,29 +89,26 @@ describe.only('Plan Endpoints', function(){
     
     //describe 'POST /plan'
     describe('POST /plan', () => {
+    
+        beforeEach('insert menu items', () => 
+            helpers.seedTables(db, testUsers, testItems)
+        )
 
-        //beforeEach(() => db.into('users_tb').insert(testUsers))
-        beforeEach(() => helpers.seedUsers(db, testUsers))
-
-        it('creates a menu item, responding with 201 and the new menu item', function() {
+        it('creates a plan item, responding with 201 and the new plan item', function() {
             const testUser = testUsers[0]
-            const newMenuItem = {
-                name: "New Menu Item",
-                //user_id: testUser.id,
-                category: "Breakfast"
-            }
+            const testItem = testPlanItem[0]
+
             return supertest(app)
-                .post('/menu')
-                .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                .send(newMenuItem)
+                .post('/plan')
+                .set('Authorization', helpers.makeAuthHeader(testUser))
+                .send(testItem)
                 .expect(201)
                 .expect(res => {
-                    expect(res.body).to.have.property('id')
-                    expect(res.body.name).to.eql(newMenuItem.name)
-                    expect(res.body.user_id).to.eql(testUser.id) //added
-                    expect(res.body.category).to.eql(newMenuItem.category)
-                    expect(res.headers.location).to.eql(`/menu/${res.body.id}`)//added
+                    expect(res.body).to.have.property('user_id')
+                    expect(res.body).to.have.property('menu_item_id')
+                    expect(res.body.name).to.eql(testItem.name)
+                    expect(res.body.user_id).to.eql(testUser.id)
+                    expect(res.body.category).to.eql(testItem.category)
                 })
                 .then(postRes =>
                     // removed
@@ -123,20 +118,21 @@ describe.only('Plan Endpoints', function(){
                        // .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                        // .expect(postRes.body)
                     //
-                    //added next lines 125 - 134    
+                    //added next 10 lines
                     db
-                        .from('menu_tb')
+                        .from('plan_tb')
                         .select('*')
-                        .where({id: postRes.body.id})
+                        .where({menu_item_id: postRes.body.menu_item_id})
                         .first()
                         .then(row => {
-                            expect(row.name).to.eql(newMenuItem.name)
-                            expect(row.category).to.eql(newMenuItem.category)
+                            expect(row.name).to.eql(testItem.name)
+                            expect(row.category).to.eql(testItem.category)
+                            expect(row.menu_item_id).to.eql(testItem.id)
                             expect(row.user_id).to.eql(testUser.id)
                         })
                 )
         })
-
+        /*
         const requiredFields = ['name', 'category']
 
         requiredFields.forEach(field => {
@@ -177,7 +173,8 @@ describe.only('Plan Endpoints', function(){
                     expect(response.body.image_url).to.eql(expectedMenuItem.image_url)
                 })
         })
-    })//end describe 'POST /menu'
+        */
+    })//end describe 'POST /plan'
 
 
     /*

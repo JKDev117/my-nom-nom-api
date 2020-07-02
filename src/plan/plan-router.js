@@ -10,9 +10,9 @@ const logger = require('../logger')
 const { requireAuth } = require('../middleware/jwt-auth')
 
 
-const serializeMenuItem = item => ({
-    menu_item_id: item.id,
+const serializePlanItem = item => ({
     user_id: item.user_id,
+    menu_item_id: item.menu_item_id,
     name: xss(item.name),
     image_url: xss(item.image_url),
     calories: item.calories,
@@ -23,7 +23,7 @@ const serializeMenuItem = item => ({
 })
 
 
-menuRouter
+planRouter
     .route('/plan')
     //ALL
     .all(requireAuth)
@@ -40,16 +40,18 @@ menuRouter
 
     //POST
     .post(bodyParser, (req, res, next) => {
-        const { id, user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
-        const newPlanItem = { id, user_id, name, image_url, calories, carbs, protein, fat, category }
-
+        const { user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
+        const newPlanItem = { user_id, name, image_url, calories, carbs, protein, fat, category }
+ 
         if(newPlanItem.name == null){
+            logger.error(`Missing 'name' in request body`)
             return res
                     .status(400)
                     .json({error: {message: `Missing 'name' in request body`}})
         }
 
         if(newPlanItem.category == null){
+            logger.error(`Missing 'category' in request body`)
             return res
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
@@ -59,7 +61,7 @@ menuRouter
                 
         array.forEach(element => {
           if(element!=undefined && (!Number.isInteger(element) || element < 0)){
-            //logger.error(`Rating must be a number greater than zero`)
+            logger.error(`Rating must be a number greater than zero`)
             return res
                 .status(400)
                 .json({
@@ -89,7 +91,7 @@ menuRouter
         newMenuItem.name = name
         */
 
-        newPlanItem.menu_item_id = req.id
+        newPlanItem.menu_item_id = req.body.id
 
         PlanService.addMenuItem(
             req.app.get('db'),
@@ -101,7 +103,7 @@ menuRouter
                     //.location(path.posix.join(req.originalUrl, `/${item.id}`))
                     .json(serializePlanItem(item))
             })
-            .catch(next)
+           .catch(next)
             
     })//end POST /plan
     
