@@ -37,14 +37,16 @@ describe.only('Plan Endpoints', function(){
                 helpers.seedTables(db, testUsers, testItems)
             )
 
-            it('responds with 200 and an empty list', () => {
+            it('responds with 200 and an empty list', (done) => {
                 return supertest(app)
                     //GET
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, [])
-            })
+                    //.expect(200, [])
+                    .expect(200, done())
+                }
+            )
         })//End context 'Given no plan items'
         
         context('Given there are meal plan items in the database', () => {
