@@ -1,4 +1,5 @@
 CREATE TABLE plan_tb (
+    user_id INTEGER REFERENCES users_tb(id) ON DELETE SET NULL,
     menu_item_id INTEGER REFERENCES menu_tb(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     image_url TEXT,
@@ -8,12 +9,6 @@ CREATE TABLE plan_tb (
     fat INTEGER,
     category TEXT NOT NULL
 );
-
-
-ALTER TABLE menu_tb
-    ADD COLUMN
-        menu_id INTEGER REFERENCES menu_tb(id)
-        ON DELETE SET NULL;
 
 
 

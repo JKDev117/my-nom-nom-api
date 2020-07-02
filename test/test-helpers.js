@@ -30,6 +30,13 @@ function createMenu(users){
     ]
 }
 
+function createPlanItem(users){
+    return [
+        {id: 1, name: "Sausage, Eggs, Biscuit, & Hashbrowns", user_id: users[0].id, image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", calories: 750, carbs: 53, protein: 25, fat: 49, category: "Breakfast"},
+    ]
+}
+
+
 
 function makeMaliciousMenuItem(user){
     const maliciousMenuItem = {
@@ -60,17 +67,20 @@ function makeMaliciousMenuItem(user){
 function makeItemsFixtures(){
     const testUsers = makeUsers()
     const testItems = createMenu(testUsers)
-    return { testUsers, testItems }
+    const testPlanItem = createPlanItem(testUsers)
+    return { testUsers, testItems, testPlanItem }
 }
 
 function cleanTables(db) {
     return db.raw(
       `TRUNCATE
+        plan_tb,
         menu_tb,
         users_tb
         RESTART IDENTITY CASCADE`
     )
 }
+
 
 function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
@@ -134,7 +144,8 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 
 module.exports = {
     makeUsers,
-    createMenu, 
+    createMenu,
+    createPlanItem, 
     makeMaliciousMenuItem,
     
     makeItemsFixtures,

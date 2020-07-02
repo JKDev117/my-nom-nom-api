@@ -45,6 +45,7 @@ app.use(function errorHandler(error, req, res, next) {
 app.use(menuRouter)
 app.use(authRouter)
 app.use(usersRouter)
+//app.use(planRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello, world!')
