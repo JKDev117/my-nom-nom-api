@@ -26,14 +26,16 @@ describe.only('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    afterEach('cleanup', () => helpers.cleanTables(db))
+    //afterEach('cleanup', () => helpers.cleanTables(db))
 
     
     //describe 'GET /menu'
     describe.only('GET /plan', () => {
-        context('Given no plan items', () => {
+        context.only('Given no plan items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
-            beforeEach(() => helpers.seedTables(db, testUsers, testItems))
+            beforeEach('insert menu items', () => 
+                helpers.seedTables(db, testUsers, testItems)
+            )
 
             it('responds with 200 and an empty list', () => {
                 return supertest(app)
@@ -43,21 +45,24 @@ describe.only('Plan Endpoints', function(){
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                     .expect(200, [])
             })
-        })//End context 'Given no menu items'
-        /*
+        })//End context 'Given no plan items'
+        
         context('Given there are meal plan items in the database', () => {
 
-            beforeEach(() => helpers.seedPlan(db, testUsers, testItems, testPlanItem))
-
-            it('GET /menu responds with 200 and all of the menu items', () => {
+            beforeEach('insert meal plan items', () => {
+                helpers.seedPlan(db, testUsers, testItems, testPlanItem)
+            })
+        
+            it('GET /menu responds with 200 and all of the meal plan items', () => {
                 return supertest(app)
-                    .get('/menu')
+                    .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, testItems)
+                    .expect(200, testPlanItem)
             })
         }) //end context 'Given there are menu items in the database'
 
+        /*
         context('Given an XSS attack menu item', () => {
             const testUser = helpers.makeUsers()[0]
             const {
@@ -88,11 +93,12 @@ describe.only('Plan Endpoints', function(){
     //describe 'POST /plan'
     describe('POST /plan', () => {
     
-        beforeEach('insert menu items', () => 
+        beforeEach('insert menu items', () => { 
             helpers.seedTables(db, testUsers, testItems)
+        }
         )
 
-        it('creates a plan item, responding with 201 and the new plan item', function() {
+        it('creates a plan item, responding with 201 and the new plan item', function(done) {
             const testUser = testUsers[0]
             const testItem = testPlanItem[0]
 
@@ -129,7 +135,7 @@ describe.only('Plan Endpoints', function(){
                             expect(row.user_id).to.eql(testUser.id)
                         })
                 )
-        })
+        })//end it 'creates a plan item, responding with 201 and the new plan item'
         /*
         const requiredFields = ['name', 'category']
 

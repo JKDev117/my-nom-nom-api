@@ -31,9 +31,9 @@ planRouter
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
-            .then(items => {
+            .then(items => console.log(items)/*{
                 res.json(items.map(item => serializeMenuItem(item)))
-            })
+            }*/)
             .catch(next)
     })
     //POST

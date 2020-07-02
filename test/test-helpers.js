@@ -81,13 +81,23 @@ function makeItemsFixtures(){
 }
 
 function cleanTables(db) {
-    return db.raw(
-      `TRUNCATE
-        plan_tb,
-        menu_tb,
-        users_tb
-        RESTART IDENTITY CASCADE`
+    return db.transaction(trx =>
+        trx.raw(
+        `TRUNCATE
+            plan_tb,
+            menu_tb,
+            users_tb
+            RESTART IDENTITY CASCADE`
+        )
+    .then(() =>
+      Promise.all([
+        trx.raw(`ALTER SEQUENCE menu_tb_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`ALTER SEQUENCE users_tb_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`SELECT setval('menu_tb_id_seq', 0)`),
+        trx.raw(`SELECT setval('users_tb_id_seq', 0)`),
+      ])
     )
+  )
 }
 
 
@@ -128,11 +138,15 @@ function seedTables(db, users, items) {
     })  
 }
 
-function seedPlan(db, users, items, plan_item) {
-    return seedTables(db, users, items)
-        .then(() => db.into('plan_tb').insert(plan_item))
-}
 
+function seedPlan(db, users, items, testItem) {
+    return seedTables(db, users, items)
+        .then(() => {
+            db
+              .into('plan_tb')
+              .insert(testItem)
+        })
+}
 
 
 function seedMaliciousItem(db, user, item) {
@@ -152,7 +166,8 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
     const token = jwt.sign({ user_id: user.id }, secret, {
           subject: user.user_name,
           algorithm: 'HS256',
-        })    
+        })
+        //console.log('token', token)    
         return `Bearer ${token}`
 }
 
@@ -167,6 +182,7 @@ module.exports = {
     cleanTables,
     seedUsers,
     seedTables,
+    seedPlan,
     seedMaliciousItem,
     makeAuthHeader,
 }
