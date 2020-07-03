@@ -32,11 +32,15 @@ planRouter
         console.log('req.user.id', req.user.id)
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
-            .then(items => //console.log('items', items)
-                {
+            .then(items => console.log('items', items)
+                /*{
                     res.json(items.map(item => serializeMenuItem(item)))
-                })
-            .catch(next)
+                }*/)
+            //.catch(next)
+            .catch(error => {
+                console.log(error)
+                next(error)
+            })
     })
     //POST
     .post(bodyParser, (req, res, next) => {

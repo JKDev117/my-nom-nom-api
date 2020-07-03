@@ -30,7 +30,7 @@ describe.only('Plan Endpoints', function(){
 
     
     //describe 'GET /menu'
-    describe.only('GET /plan', () => {
+    describe('GET /plan', () => {
         context('Given no plan items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach('insert menu items', () => 
@@ -49,13 +49,14 @@ describe.only('Plan Endpoints', function(){
             )
         })//End context 'Given no plan items'
         
-        context.only('Given there are meal plan items in the database', () => {
+        context('Given there are meal plan items in the database', () => {
 
             beforeEach('insert meal plan items', () => {
                 helpers.seedPlan(db, testUsers, testItems, testPlanItem)
             })
         
             it('GET /menu responds with 200 and all of the meal plan items', (done) => {
+                //console.log('hello world')
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
@@ -93,7 +94,7 @@ describe.only('Plan Endpoints', function(){
     
     
     //describe 'POST /plan'
-    describe('POST /plan', () => {
+    describe.only('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
             helpers.seedTables(db, testUsers, testItems)
@@ -136,6 +137,7 @@ describe.only('Plan Endpoints', function(){
                             expect(row.menu_item_id).to.eql(testItem.id)
                             expect(row.user_id).to.eql(testUser.id)
                         })
+                        
                 )
         })//end it 'creates a plan item, responding with 201 and the new plan item'
         /*
