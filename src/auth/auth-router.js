@@ -1,6 +1,7 @@
 const express = require('express')
 const AuthService = require('./auth-service')
 const { requireAuth } = require('../middleware/jwt-auth')
+const logger = require('../logger')
 const authRouter = express.Router()
 const jsonBodyParser = express.json()
 
@@ -14,13 +15,16 @@ authRouter
             return res.status(400).json({
                 error: `Missing '${key}' in request body`
             })
-
+            
+        //console.log('loginUser.user_name @auth-router.js', loginUser.user_name)
         AuthService.getUserWithUserName(
               req.app.get('db'),
               loginUser.user_name
             )
               .then(dbUser => {
+                //console.log('dbUser @auth-router.js', dbUser)
                 if (!dbUser){
+                  logger.error('Incorrect user_name or password')
                   return res.status(400).json({
                     error: 'Incorrect user_name or password',
                   })
@@ -28,6 +32,7 @@ authRouter
                 return AuthService.comparePasswords(loginUser.password, dbUser.password)
                     .then(compareMatch => {
                         if (!compareMatch){
+                            logger.error('Incorrect user_name or password')
                             return res.status(400).json({
                                 error: 'Incorrect user_name or password',
                             })

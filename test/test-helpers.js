@@ -32,7 +32,7 @@ function createMenu(users){
 
 function createPlanItem(users){
     return [
-        { id: 1, 
+        { menu_item_id: 1, 
           name: "Sausage, Eggs, Biscuit, & Hashbrowns", 
           user_id: users[0].id, 
           image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", 
@@ -89,6 +89,10 @@ function cleanTables(db) {
             users_tb
             RESTART IDENTITY CASCADE`
         )
+        //TRUNCATE -- empty a table or set of tables
+        //RESTART IDENTITY - Automatically restart sequences owned by columns of the truncated table(s).
+        //CASCADE - Automatically truncate all tables that have foreign-key references to any of the named tables, or to any tables added to the group due to CASCADE.
+    /*    
     .then(() =>
       Promise.all([
         trx.raw(`ALTER SEQUENCE menu_tb_id_seq minvalue 0 START WITH 1`),
@@ -96,7 +100,7 @@ function cleanTables(db) {
         trx.raw(`SELECT setval('menu_tb_id_seq', 0)`),
         trx.raw(`SELECT setval('users_tb_id_seq', 0)`),
       ])
-    )
+    )*/
   )
 }
 
@@ -116,8 +120,11 @@ function seedUsers(db, users) {
     )
 }
 
-
 function seedTables(db, users, items) {
+    //console.log('db @test-helpers.js @seedTables', db)
+    //console.log('users @test-helpers.js @seedTables', users)
+    //console.log('items @test-helpers.js @seedTables', items)
+
     /*return db
       .into('users_tb')
       .insert(users)
@@ -128,25 +135,42 @@ function seedTables(db, users, items) {
       )*/
     //use a transaction to group the queries and auto rollback on any failure  
     return db.transaction(async trx => {
-        await seedUsers(trx, users)
-        await trx.into('menu_tb').insert(items)
-        //update the auto sequence to match the forced id values
-        await trx.raw(
-            `SELECT setval('menu_tb_id_seq', ?)`,
-            [items[items.length -1].id],
-        ) 
+        try { 
+            await seedUsers(trx, users)
+            await trx.into('menu_tb').insert(items)
+            //update the auto sequence to match the forced id values
+            await trx.raw(
+                `SELECT setval('menu_tb_id_seq', ?)`,
+                [items[items.length -1].id],
+            )  
+        } catch(e){
+            console.error("error in catch stmt of seedTables() @test-helpers.js", e)
+        }
     })  
 }
 
 
 function seedPlan(db, users, items, testItem) {
-    //console.log('testItem @test-helpers.js', testItem)
+    //console.log('users @test-helpers.js @seedPlan', users)
+    //console.log('items @test-helpers.js @seedPlan', items)
+    //console.log('testItem @test-helpers.js @seedPlan', testItem)
+
+    /*
     return seedTables(db, users, items)
-        .then(() => {
-            db
-              .into('plan_tb')
-              .insert(testItem)
-        })
+
+        .then(() => 
+            //console.log('testItem @return statement in seedPlan', testItem)
+                db
+                .into('plan_tb')
+                .insert(testItem)
+        )
+        .catch(error => console.error(`failed to insert testItem to plan_tb`, error))
+    */
+
+   return db.transaction(async trx => {
+        await seedTables(trx, users, items)
+        await trx.into('plan_tb').insert(testItem)
+   })
 }
 
 

@@ -26,8 +26,7 @@ describe.only('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
-
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     //describe 'GET /menu'
     describe('GET /plan', () => {
@@ -52,11 +51,10 @@ describe.only('Plan Endpoints', function(){
         context('Given there are meal plan items in the database', () => {
 
             beforeEach('insert meal plan items', () => {
-                helpers.seedPlan(db, testUsers, testItems, testPlanItem)
+                helpers.seedPlan(db, testUsers, testItems, testPlanItem) 
             })
         
             it('GET /menu responds with 200 and all of the meal plan items', (done) => {
-                //console.log('hello world')
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
@@ -94,14 +92,14 @@ describe.only('Plan Endpoints', function(){
     
     
     //describe 'POST /plan'
-    describe.only('POST /plan', () => {
+    describe('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
             helpers.seedTables(db, testUsers, testItems)
         }
         )
 
-        it('creates a plan item, responding with 201 and the new plan item', function(done) {
+        it('creates a plan item, responding with 201 and the new plan item', function() {
             const testUser = testUsers[0]
             const testItem = testPlanItem[0]
 
@@ -111,6 +109,7 @@ describe.only('Plan Endpoints', function(){
                 .send(testItem)
                 .expect(201)
                 .expect(res => {
+                    //console.log('res @plan-endpoints.spec.js @POST /plan @201 test', res)
                     expect(res.body).to.have.property('user_id')
                     expect(res.body).to.have.property('menu_item_id')
                     expect(res.body.name).to.eql(testItem.name)
