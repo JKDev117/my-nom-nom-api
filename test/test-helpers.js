@@ -168,8 +168,13 @@ function seedPlan(db, users, items, testItem) {
     */
 
    return db.transaction(async trx => {
+       try{
         await seedTables(trx, users, items)
         await trx.into('plan_tb').insert(testItem)
+       } catch(e){
+           console.error("error in catch stmt of seedPlan() @test-helpers.js", e)
+       }
+        
    })
 }
 
