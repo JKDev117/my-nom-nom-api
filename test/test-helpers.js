@@ -140,6 +140,7 @@ function seedTables(db, users, items) {
 
 
 function seedPlan(db, users, items, testItem) {
+    //console.log('testItem @test-helpers.js', testItem)
     return seedTables(db, users, items)
         .then(() => {
             db

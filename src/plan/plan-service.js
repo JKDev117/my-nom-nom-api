@@ -1,5 +1,6 @@
 const PlanService = {
     getAllPlanItems(knex, user_id) {
+        //console.log('user id @plan-service.js', user_id)
         return knex.select('*').from('plan_tb').where('user_id', user_id)
     },
     addMenuItem(knex, MenuItem){

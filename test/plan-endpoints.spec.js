@@ -31,7 +31,7 @@ describe.only('Plan Endpoints', function(){
     
     //describe 'GET /menu'
     describe.only('GET /plan', () => {
-        context.only('Given no plan items', () => {
+        context('Given no plan items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach('insert menu items', () => 
                 helpers.seedTables(db, testUsers, testItems)
@@ -49,18 +49,18 @@ describe.only('Plan Endpoints', function(){
             )
         })//End context 'Given no plan items'
         
-        context('Given there are meal plan items in the database', () => {
+        context.only('Given there are meal plan items in the database', () => {
 
             beforeEach('insert meal plan items', () => {
                 helpers.seedPlan(db, testUsers, testItems, testPlanItem)
             })
         
-            it('GET /menu responds with 200 and all of the meal plan items', () => {
+            it('GET /menu responds with 200 and all of the meal plan items', (done) => {
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, testPlanItem)
+                    .expect(200, testPlanItem, done())
             })
         }) //end context 'Given there are menu items in the database'
 
