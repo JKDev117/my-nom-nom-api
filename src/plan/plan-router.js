@@ -103,10 +103,11 @@ planRouter
         //console.log('req.user at get /plan router', req.user) //=> { ... }
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
-            .then(items => //console.log('items', items)
-                {
-                    res.json(items.map(item => serializeMenuItem(item)))
-                })
+            .then(items => console.log('items', items)
+                    /*{
+                        res.json(items.map(item => serializeMenuItem(item)))
+                    }*/
+                )
             //.catch(next)
             .catch(error => {
                 console.log(error)

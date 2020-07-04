@@ -1,10 +1,13 @@
 const AuthService = require('../auth/auth-service')
+const logger = require('../logger')
 
 function requireAuth(req, res, next) {
     const authToken = req.get('Authorization') || ''
 
     let bearerToken
     if (!authToken.toLowerCase().startsWith('bearer ')) {
+        //
+        logger.error('Missing bearer token @jwt-auth.js')
         return res.status(401).json({ error: 'Missing bearer token' })
     } else {
         bearerToken = authToken.slice(7, authToken.length)
@@ -19,6 +22,8 @@ function requireAuth(req, res, next) {
         )
             .then(user => {
                 if (!user)
+                    //
+                    logger.error('Unauthorized request because !user @jwt-auth.js')
                     return res.status(401).json({ error: 'Unauthorized request' })
             req.user = user
             next()
@@ -30,6 +35,8 @@ function requireAuth(req, res, next) {
             next(err)
         })*/
     } catch(error) {
+        //
+        logger.error('Unauthorized request because try fails @jwt-auth.js')
         res.status(401).json({ error: 'Unauthorized request' })
     }
 }
