@@ -28,11 +28,11 @@ describe('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
-    describe.only('POST /plan', () => {
+    describe('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
             helpers.seedTables(
@@ -132,38 +132,38 @@ describe('Plan Endpoints', function(){
     })//end describe 'POST /plan'
 
     //describe 'GET /menu'
-    describe.skip('GET /plan', () => {
+    describe.only('GET /plan', () => {
         context('Given no plan items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach('insert menu items', () => 
                 helpers.seedTables(db, testUsers, testItems)
             )
 
-            it('responds with 200 and an empty list', (done) => {
+            it('responds with 200 and an empty list', () => {
                 return supertest(app)
                     //GET
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    //.expect(200, [])
-                    .expect(200, done())
+                    .expect(200, [])
                 }
             )
         })//End context 'Given no plan items'
         
-        context('Given there are meal plan items in the database', () => {
-
+        context.only('Given there are meal plan items in the database', () => {
+            //console.log('testPlanItem', testPlanItem)
             beforeEach('insert meal plan items', () => {
-                helpers.seedPlan(db, testUsers, testItems, testPlanItem) 
+                helpers.seedTables(db, testUsers, testItems, testPlanItem) 
             })
-        
-            it('GET /menu responds with 200 and all of the meal plan items', (done) => {
+            
+            it('GET /plan responds with 200 and all of the meal plan items', () => {
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, testPlanItem, done())
+                    .expect(200, testPlanItem)
             })
+            
         }) //end context 'Given there are menu items in the database'
 
     /*
