@@ -2,17 +2,19 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 const { expect } = require('chai')
-
-const {
-    testUsers,
-    testItems,
-    testPlanItem,
-} = helpers.makeItemsFixtures()
+const { json } = require('express')
 
 
-describe.only('Plan Endpoints', function(){
+describe('Plan Endpoints', function(){
 
     let db
+
+    const {
+        testUsers,
+        testItems,
+        testPlanItem,
+    } = helpers.makeItemsFixtures()
+
 
     before('make knex instance', () => {
         db = knex({
@@ -26,82 +28,28 @@ describe.only('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    afterEach('cleanup', () => helpers.cleanTables(db))
-    
-    //describe 'GET /menu'
-    describe('GET /plan', () => {
-        context('Given no plan items', () => {
-            //beforeEach(() => db.into('users_tb').insert(testUsers))
-            beforeEach('insert menu items', () => 
-                helpers.seedTables(db, testUsers, testItems)
-            )
-
-            it('responds with 200 and an empty list', (done) => {
-                return supertest(app)
-                    //GET
-                    .get('/plan')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    //.expect(200, [])
-                    .expect(200, done())
-                }
-            )
-        })//End context 'Given no plan items'
-        
-        context('Given there are meal plan items in the database', () => {
-
-            beforeEach('insert meal plan items', () => {
-                helpers.seedPlan(db, testUsers, testItems, testPlanItem) 
-            })
-        
-            it('GET /menu responds with 200 and all of the meal plan items', (done) => {
-                return supertest(app)
-                    .get('/plan')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, testPlanItem, done())
-            })
-        }) //end context 'Given there are menu items in the database'
-
-        /*
-        context('Given an XSS attack menu item', () => {
-            const testUser = helpers.makeUsers()[0]
-            const {
-                maliciousMenuItem,
-                expectedMenuItem
-            } = helpers.makeMaliciousMenuItem(testUser)
-
-            beforeEach('insert malicious menu item', () => 
-                helpers.seedMaliciousItem(db, testUser, maliciousMenuItem)    
-            )
-            
-            it('removes XSS attack content', () => {
-                return supertest(app)
-                    .get('/menu')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200)
-                    .expect(res => {
-                        expect(res.body[0].name).to.eql(expectedMenuItem.name)
-                        expect(res.body[0].image_url).to.eql(expectedMenuItem.image_url)
-                    })
-            })
-        })//end context 'Given an XSS attack menu item'
-        */
-    })//end describe 'GET /menu'  
+    //afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
-    describe('POST /plan', () => {
+    describe.only('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
-            helpers.seedTables(db, testUsers, testItems)
-        }
-        )
-
+            helpers.seedTables(
+                db, 
+                testUsers, 
+                testItems
+            )
+        })
+        
         it('creates a plan item, responding with 201 and the new plan item', function() {
-            const testUser = testUsers[0]
-            const testItem = testPlanItem[0]
+            //this.retries(3)
+
+            const testUser = testUsers[0] //e.g. Dunder Mifflin
+            const testItem = testItems[0] 
+
+            console.log('testItem being sent in POST /plan', testItem)
+            console.log('testUser in POST /plan', testUser)
 
             return supertest(app)
                 .post('/plan')
@@ -114,9 +62,10 @@ describe.only('Plan Endpoints', function(){
                     expect(res.body).to.have.property('menu_item_id')
                     expect(res.body.name).to.eql(testItem.name)
                     expect(res.body.user_id).to.eql(testUser.id)
+                    expect(res.body.menu_item_id).to.eql(testItem.id)
                     expect(res.body.category).to.eql(testItem.category)
                 })
-                .then(postRes =>
+                .then(res =>
                     // removed
                     //supertest(app)
                       //  .get(`/menu/${postRes.body.id}`)
@@ -128,15 +77,14 @@ describe.only('Plan Endpoints', function(){
                     db
                         .from('plan_tb')
                         .select('*')
-                        .where({menu_item_id: postRes.body.menu_item_id})
+                        .where({menu_item_id: res.body.menu_item_id})
                         .first()
                         .then(row => {
                             expect(row.name).to.eql(testItem.name)
-                            expect(row.category).to.eql(testItem.category)
-                            expect(row.menu_item_id).to.eql(testItem.id)
                             expect(row.user_id).to.eql(testUser.id)
-                        })
-                        
+                            expect(row.menu_item_id).to.eql(testItem.id)
+                            expect(row.category).to.eql(testItem.category)
+                        }) 
                 )
         })//end it 'creates a plan item, responding with 201 and the new plan item'
         /*
@@ -183,7 +131,67 @@ describe.only('Plan Endpoints', function(){
         */
     })//end describe 'POST /plan'
 
+    //describe 'GET /menu'
+    describe.skip('GET /plan', () => {
+        context('Given no plan items', () => {
+            //beforeEach(() => db.into('users_tb').insert(testUsers))
+            beforeEach('insert menu items', () => 
+                helpers.seedTables(db, testUsers, testItems)
+            )
 
+            it('responds with 200 and an empty list', (done) => {
+                return supertest(app)
+                    //GET
+                    .get('/plan')
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    //.expect(200, [])
+                    .expect(200, done())
+                }
+            )
+        })//End context 'Given no plan items'
+        
+        context('Given there are meal plan items in the database', () => {
+
+            beforeEach('insert meal plan items', () => {
+                helpers.seedPlan(db, testUsers, testItems, testPlanItem) 
+            })
+        
+            it('GET /menu responds with 200 and all of the meal plan items', (done) => {
+                return supertest(app)
+                    .get('/plan')
+                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    .expect(200, testPlanItem, done())
+            })
+        }) //end context 'Given there are menu items in the database'
+
+    /*
+    context('Given an XSS attack menu item', () => {
+        const testUser = helpers.makeUsers()[0]
+        const {
+            maliciousMenuItem,
+            expectedMenuItem
+        } = helpers.makeMaliciousMenuItem(testUser)
+
+        beforeEach('insert malicious menu item', () => 
+            helpers.seedMaliciousItem(db, testUser, maliciousMenuItem)    
+        )
+        
+        it('removes XSS attack content', () => {
+            return supertest(app)
+                .get('/menu')
+                //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                .expect(200)
+                .expect(res => {
+                    expect(res.body[0].name).to.eql(expectedMenuItem.name)
+                    expect(res.body[0].image_url).to.eql(expectedMenuItem.image_url)
+                })
+        })
+    })//end context 'Given an XSS attack menu item'
+    */
+})//end describe 'GET /menu'  
     /*
     //describe 'GET /menu/:item_id'
     describe('GET /menu/:item_id', () => {

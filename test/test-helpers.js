@@ -8,7 +8,8 @@ function makeUsers(){
             first_name: 'Dunder',
             last_name: 'Mifflin',
             user_name: 'dunder_mifflin',
-            password: 'password'
+            password: 'password',
+            date_created: '2029-01-22T16:28:32.615Z',
         },
     ]
 }
@@ -30,9 +31,9 @@ function createMenu(users){
     ]
 }
 
-function createPlanItem(users){
+function createPlanItem(users, items){
     return [
-        { menu_item_id: 1, 
+        { menu_item_id: items[0].id, 
           name: "Sausage, Eggs, Biscuit, & Hashbrowns", 
           user_id: users[0].id, 
           image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", 
@@ -76,7 +77,7 @@ function makeMaliciousMenuItem(user){
 function makeItemsFixtures(){
     const testUsers = makeUsers()
     const testItems = createMenu(testUsers)
-    const testPlanItem = createPlanItem(testUsers)
+    const testPlanItem = createPlanItem(testUsers, testItems)
     return { testUsers, testItems, testPlanItem }
 }
 
@@ -84,9 +85,9 @@ function cleanTables(db) {
     return db.transaction(trx =>
         trx.raw(
         `TRUNCATE
-            plan_tb,
             menu_tb,
-            users_tb
+            users_tb,
+            plan_tb
             RESTART IDENTITY CASCADE`
         )
         //TRUNCATE -- empty a table or set of tables
@@ -109,7 +110,7 @@ function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
         ...user,
         password: bcrypt.hashSync(user.password, 12)
-        }))
+    }))
     return db.into('users_tb').insert(preppedUsers)
     .then(() =>
         // update the auto sequence to stay in sync
@@ -118,65 +119,45 @@ function seedUsers(db, users) {
             [users[users.length - 1].id],
         )
     )
+    .catch(error => console.log(error))
 }
 
-function seedTables(db, users, items) {
+function seedTables(db, users, items, planItems=[]) {
     //console.log('db @test-helpers.js @seedTables', db)
     //console.log('users @test-helpers.js @seedTables', users)
     //console.log('items @test-helpers.js @seedTables', items)
-
-    /*return db
+    /*
+    return db
       .into('users_tb')
       .insert(users)
       .then(() =>
         db
           .into('menu_tb')
           .insert(items)
-      )*/
-    //use a transaction to group the queries and auto rollback on any failure  
+      )
+      */
+
+    //use a transaction to group the queries and auto rollback on any failure 
     return db.transaction(async trx => {
-        try { 
+        try {
             await seedUsers(trx, users)
             await trx.into('menu_tb').insert(items)
             //update the auto sequence to match the forced id values
             await trx.raw(
                 `SELECT setval('menu_tb_id_seq', ?)`,
-                [items[items.length -1].id],
+                [items[items.length -1].id]
             )  
+            //only inserts plan items if there are some
+            if(planItems.length){
+                await trx.into('plan_tb').insert(planItems)
+            } 
         } catch(e){
-            console.error("error in catch stmt of seedTables() @test-helpers.js", e)
+            console.log("error here", e)
         }
+           
     })  
 }
 
-
-function seedPlan(db, users, items, testItem) {
-    //console.log('users @test-helpers.js @seedPlan', users)
-    //console.log('items @test-helpers.js @seedPlan', items)
-    //console.log('testItem @test-helpers.js @seedPlan', testItem)
-
-    /*
-    return seedTables(db, users, items)
-
-        .then(() => 
-            //console.log('testItem @return statement in seedPlan', testItem)
-                db
-                .into('plan_tb')
-                .insert(testItem)
-        )
-        .catch(error => console.error(`failed to insert testItem to plan_tb`, error))
-    */
-
-   return db.transaction(async trx => {
-       try{
-        await seedTables(trx, users, items)
-        await trx.into('plan_tb').insert(testItem)
-       } catch(e){
-           console.error("error in catch stmt of seedPlan() @test-helpers.js", e)
-       }
-        
-   })
-}
 
 
 function seedMaliciousItem(db, user, item) {
@@ -212,7 +193,6 @@ module.exports = {
     cleanTables,
     seedUsers,
     seedTables,
-    seedPlan,
     seedMaliciousItem,
     makeAuthHeader,
 }

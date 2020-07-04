@@ -27,26 +27,12 @@ planRouter
     .route('/plan')
     //ALL
     .all(requireAuth)
-    //GET
-    .get((req,res,next) => {
-        console.log('req.user.id', req.user.id)
-        const knexInstance = req.app.get('db')
-        PlanService.getAllPlanItems(knexInstance, req.user.id)
-            .then(items => console.log('items', items)
-                /*{
-                    res.json(items.map(item => serializeMenuItem(item)))
-                }*/)
-            //.catch(next)
-            .catch(error => {
-                console.log(error)
-                next(error)
-            })
-    })
     //POST
     .post(bodyParser, (req, res, next) => {
+  
         const { user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
         const newPlanItem = { user_id, name, image_url, calories, carbs, protein, fat, category }
- 
+  
         if(newPlanItem.name == null){
             logger.error(`Missing 'name' in request body`)
             return res
@@ -94,7 +80,7 @@ planRouter
         
         newMenuItem.name = name
         */
-
+    
         newPlanItem.menu_item_id = req.body.id
 
         PlanService.addMenuItem(
@@ -102,6 +88,8 @@ planRouter
             newPlanItem
         )
             .then(item => {
+                //console.log('req.originalUrl', req.originalUrl) //=> /plan
+                console.log('item returned from db after PlanService.addMenuItem', item)
                 res
                     .status(201)
                     //.location(path.posix.join(req.originalUrl, `/${item.id}`))
@@ -110,6 +98,22 @@ planRouter
            .catch(next)
             
     })//end POST /plan
+    //GET
+    .get((req,res,next) => {
+        console.log('req.user.id', req.user.id)
+        const knexInstance = req.app.get('db')
+        PlanService.getAllPlanItems(knexInstance, req.user.id)
+            .then(items => console.log('items', items)
+                /*{
+                    res.json(items.map(item => serializeMenuItem(item)))
+                }*/)
+            //.catch(next)
+            .catch(error => {
+                console.log(error)
+                next(error)
+            })
+    })
+    
     
 /*    
 menuRouter
