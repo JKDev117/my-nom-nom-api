@@ -16,11 +16,14 @@ function requireAuth(req, res, next) {
     try {
         const payload = AuthService.verifyJwt(bearerToken)
 
+        console.log('payload@jwt-auth.js', payload) //=>  (e.g.) { user_id: 1, iat: 1593839142, sub: 'dunder_mifflin' }
+
         AuthService.getUserWithUserName(
             req.app.get('db'),
             payload.sub,
         )
             .then(user => {
+                console.log('user @jwt-auth.js', user) //=> undefined
                 if (!user)
                     //
                     logger.error('Unauthorized request because !user @jwt-auth.js')
