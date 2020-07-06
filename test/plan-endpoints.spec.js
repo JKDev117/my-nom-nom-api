@@ -16,6 +16,8 @@ describe('Plan Endpoints', function(){
     } = helpers.makeItemsFixtures()
 
 
+    //let token;
+
     before('make knex instance', () => {
         db = knex({
             client: 'pg',
@@ -28,11 +30,11 @@ describe('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
-    describe('POST /plan', () => {
+    describe.only('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
             helpers.seedTables(
@@ -132,14 +134,19 @@ describe('Plan Endpoints', function(){
     })//end describe 'POST /plan'
 
     //describe 'GET /menu'
-    describe.only('GET /plan', () => {
+    describe('GET /plan', () => {
+
+
         context('Given no plan items', () => {
+            console.log(`overview of this test GET /plan given there no plan items in the db:
+            seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
+
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach('insert menu items', () => 
                 helpers.seedTables(db, testUsers, testItems)
             )
 
-            it('responds with 200 and an empty list', () => {
+            it.only('responds with 200 and an empty list', () => {
                 return supertest(app)
                     //GET
                     .get('/plan')
@@ -150,17 +157,44 @@ describe('Plan Endpoints', function(){
             )
         })//End context 'Given no plan items'
         
-        context.only('Given there are meal plan items in the database', () => {
+        context('Given there are meal plan items in the database', () => {
+            console.log(`overview of this test GET /plan given there are meal plan items in the db:
+            seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
+
             //console.log('testPlanItem', testPlanItem)
             beforeEach('insert meal plan items', () => {
                 helpers.seedTables(db, testUsers, testItems, testPlanItem) 
             })
             
             it('GET /plan responds with 200 and all of the meal plan items', () => {
+                console.log('it GET /plan responds with 200')
+                
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    /* Notes: 
+                        function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+                            const token = jwt.sign({ user_id: user.id }, secret, {
+                                subject: user.user_name,
+                                algorithm: 'HS256',
+                                })
+                                console.log('token', token)    
+                                return `Bearer ${token}`
+                        }
+                        
+                        testUsers[0]
+                            {
+                                id: 1,
+                                first_name: 'Dunder',
+                                last_name: 'Mifflin',
+                                user_name: 'dunder_mifflin',
+                                password: 'password',
+                                date_created: '2029-01-22T16:28:32.615Z',
+                            },
+
+
+                    */
                     .expect(200, testPlanItem)
             })
             

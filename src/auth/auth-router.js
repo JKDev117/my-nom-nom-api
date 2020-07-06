@@ -15,7 +15,6 @@ authRouter
             return res.status(400).json({
                 error: `Missing '${key}' in request body`
             })
-            
         //console.log('loginUser.user_name @auth-router.js', loginUser.user_name)
         AuthService.getUserWithUserName(
               req.app.get('db'),
@@ -47,7 +46,6 @@ authRouter
               .catch(next)
   })
 
-
   authRouter.post('/auth/refresh', requireAuth, (req, res) => {
     const sub = req.user.user_name
     const payload = { user_id: req.user.id }
@@ -55,7 +53,7 @@ authRouter
       authToken: AuthService.createJwt(sub, payload),
     })
   })
-
+  
 module.exports = authRouter
 
 
