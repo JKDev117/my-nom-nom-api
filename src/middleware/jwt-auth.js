@@ -3,11 +3,8 @@ const logger = require('../logger')
 
 function requireAuth(req, res, next) {
     const authToken = req.get('Authorization') || ''
-
     //console.log
     //console.log('contents of request headers/rawHeaders at requireAuth(jwt-auth.js)', req.headers, req.rawHeaders)
-
-
     let bearerToken
     if (!authToken.toLowerCase().startsWith('bearer ')) {
         //logger.error
@@ -22,7 +19,6 @@ function requireAuth(req, res, next) {
 
         //console.log('payload@jwt-auth.js', payload) //=>  (e.g.) { user_id: 1, iat: 1593839142, sub: 'dunder_mifflin' }
         //console.log('payload.sub@jwt-auth.js', payload.sub) //=>  (e.g.) 'dunder_mifflin'
-
         AuthService.getUserWithUserName(
             req.app.get('db'),
             payload.sub

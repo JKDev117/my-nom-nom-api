@@ -162,70 +162,18 @@ describe('Plan Endpoints', function(){
         context('Given there are meal plan items in the database', () => {
             //console.log(`overview of this test for GET /plan >> given there are meal plan items in the db:
             //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
-
-            //new variable
-            let token;
-
-            //console.log('testPlanItem', testPlanItem)
+            
             beforeEach('insert meal plan items', () => {
-                helpers.seedTables(db, testUsers, testItems, testPlanItem)   
-                /*    
-                testUser = {
-                    user_name: testUsers[0].user_name,
-                    password: bcrypt.hashSync(testUsers[0].password, 12)
-                }
-                
-                console.log("test user_name being sent to post /auth/login: ", testUser.user_name)
-                console.log("test password being sent to post /auth/login: ", testUser.password)
-                
-                
-                //try supertest here
-                supertest(app)
-                    .post('/auth/login')
-                    .send({
-                        user_name: testUser.user_name,
-                        password: testUser.password
-                    })
-                    .end((err, res) => {
-                        console.log('res.body after sending user_name and pw to post /auth/login', res.body)
-                        token = res.body.token; //save the token
-                    })
-                */    
-                    
+                helpers.seedTables(db, testUsers, testItems, testPlanItem)                       
             })
             
-
-            it.only('GET /plan responds with 200 and all of the meal plan items', () => {
-                
+            it.only('GET /plan responds with 200 and all of the meal plan items', () => {                
                 return supertest(app)
                     .get('/plan')
                     //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    /* Notes: 
-                        function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-                            const token = jwt.sign({ user_id: user.id }, secret, {
-                                subject: user.user_name,
-                                algorithm: 'HS256',
-                                })
-                                console.log('token', token)    
-                                return `Bearer ${token}`
-                        }
-                        
-                        testUsers[0]
-                            {
-                                id: 1,
-                                first_name: 'Dunder',
-                                last_name: 'Mifflin',
-                                user_name: 'dunder_mifflin',
-                                password: 'password',
-                                date_created: '2029-01-22T16:28:32.615Z',
-                            },
-
-
-                    */
                     .expect(200, testPlanItem)
             })
-            
         }) //end context 'Given there are menu items in the database'
 
     /*

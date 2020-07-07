@@ -136,7 +136,6 @@ function seedTables(db, users, items, planItems=[]) {
           .insert(items)
       )
       */
-
     //use a transaction to group the queries and auto rollback on any failure 
     return db.transaction(async trx => {
         try {
