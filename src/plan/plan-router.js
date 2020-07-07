@@ -100,13 +100,13 @@ planRouter
     })//end POST /plan
     //GET
     .get((req,res,next) => {
-        console.log('req.headers/authHeaders being sent in GET request', req.headers, req.authHeaders)
+        //console.log('req.headers/authHeaders being sent in GET request', req.headers, req.authHeaders)
         //console.log('req.user at get /plan router', req.user) //=> { ... }
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
             .then(items => {
                     console.log('response or items being returned from getAllPlanItems() in GET ', items)
-                    res.json(items.map(item => serializeMenuItem(item)))    
+                    res.json(items.map(item => serializePlanItem(item)))    
                 })
             //.catch(next)         
             .catch(error => {

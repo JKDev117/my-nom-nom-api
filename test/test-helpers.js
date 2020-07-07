@@ -174,11 +174,15 @@ function seedMaliciousItem(db, user, item) {
 
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-    const token = jwt.sign({ user_id: user.id }, secret, {
+    const token = jwt.sign(
+        { user_id: user.id }, //payload
+        secret, //secret
+        {
           subject: user.user_name,
+          expiresIn: process.env.JWT_EXPIRY,
           algorithm: 'HS256',
         })
-        console.log('token generated from makeAuthHeader call', token)    
+        //console.log('token generated from makeAuthHeader call', token)    
         return `Bearer ${token}`
 }
 

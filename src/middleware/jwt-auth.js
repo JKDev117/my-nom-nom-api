@@ -5,7 +5,7 @@ function requireAuth(req, res, next) {
     const authToken = req.get('Authorization') || ''
 
     //console.log
-    console.log('contents of request headers/rawHeaders at requireAuth(jwt-auth.js)', req.headers, req.rawHeaders)
+    //console.log('contents of request headers/rawHeaders at requireAuth(jwt-auth.js)', req.headers, req.rawHeaders)
 
 
     let bearerToken
@@ -20,9 +20,8 @@ function requireAuth(req, res, next) {
     try {
         const payload = AuthService.verifyJwt(bearerToken)
 
-        console.log('payload@jwt-auth.js', payload) //=>  (e.g.) { user_id: 1, iat: 1593839142, sub: 'dunder_mifflin' }
-        console.log('payload.sub@jwt-auth.js', payload.sub) //=>  (e.g.) 'dunder_mifflin'
-
+        //console.log('payload@jwt-auth.js', payload) //=>  (e.g.) { user_id: 1, iat: 1593839142, sub: 'dunder_mifflin' }
+        //console.log('payload.sub@jwt-auth.js', payload.sub) //=>  (e.g.) 'dunder_mifflin'
 
         AuthService.getUserWithUserName(
             req.app.get('db'),
@@ -36,9 +35,9 @@ function requireAuth(req, res, next) {
             */
         )
             .then(user => {
-                console.log('user @jwt-auth.js', user) //=> undefined
+                console.log('@jwt-auth.js: user returned from getUserWithUserName() =>', user)
                 if (!user){
-                    logger.error('Unauthorized request because !user @jwt-auth.js')
+                    logger.error('@jwt-auth.js: Unauthorized request because user is undefined')
                     return res.status(401).json({ error: 'Unauthorized request' })
                 }    
                 req.user = user
@@ -49,7 +48,7 @@ function requireAuth(req, res, next) {
             next(err)
         })
     } catch(error) {
-        logger.error('Unauthorized request because try fails @jwt-auth.js')
+        logger.error('@jwt-auth.js: Unauthorized request because code in try block failed')
         res.status(401).json({ error: 'Unauthorized request' })
     }
 }

@@ -3,6 +3,8 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const { expect } = require('chai')
 const { json } = require('express')
+const supertest = require('supertest')
+const bcrypt = require('bcryptjs')
 
 
 describe('Plan Endpoints', function(){
@@ -30,11 +32,11 @@ describe('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    afterEach('cleanup', () => helpers.cleanTables(db))
+    //afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
-    describe.only('POST /plan', () => {
+    describe('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
             helpers.seedTables(
@@ -138,15 +140,15 @@ describe('Plan Endpoints', function(){
 
 
         context('Given no plan items', () => {
-            console.log(`overview of this test GET /plan given there no plan items in the db:
-            seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
+            //console.log(`overview of this test for GET /plan >> given there no plan items in the db:
+            //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
 
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach('insert menu items', () => 
                 helpers.seedTables(db, testUsers, testItems)
             )
 
-            it.only('responds with 200 and an empty list', () => {
+            it('responds with 200 and an empty list', () => {
                 return supertest(app)
                     //GET
                     .get('/plan')
@@ -158,16 +160,42 @@ describe('Plan Endpoints', function(){
         })//End context 'Given no plan items'
         
         context('Given there are meal plan items in the database', () => {
-            console.log(`overview of this test GET /plan given there are meal plan items in the db:
-            seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
+            //console.log(`overview of this test for GET /plan >> given there are meal plan items in the db:
+            //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
+
+            //new variable
+            let token;
 
             //console.log('testPlanItem', testPlanItem)
             beforeEach('insert meal plan items', () => {
-                helpers.seedTables(db, testUsers, testItems, testPlanItem) 
+                helpers.seedTables(db, testUsers, testItems, testPlanItem)   
+                /*    
+                testUser = {
+                    user_name: testUsers[0].user_name,
+                    password: bcrypt.hashSync(testUsers[0].password, 12)
+                }
+                
+                console.log("test user_name being sent to post /auth/login: ", testUser.user_name)
+                console.log("test password being sent to post /auth/login: ", testUser.password)
+                
+                
+                //try supertest here
+                supertest(app)
+                    .post('/auth/login')
+                    .send({
+                        user_name: testUser.user_name,
+                        password: testUser.password
+                    })
+                    .end((err, res) => {
+                        console.log('res.body after sending user_name and pw to post /auth/login', res.body)
+                        token = res.body.token; //save the token
+                    })
+                */    
+                    
             })
             
-            it('GET /plan responds with 200 and all of the meal plan items', () => {
-                console.log('it GET /plan responds with 200')
+
+            it.only('GET /plan responds with 200 and all of the meal plan items', () => {
                 
                 return supertest(app)
                     .get('/plan')
