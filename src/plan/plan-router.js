@@ -105,7 +105,7 @@ planRouter
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
             .then(items => {
-                    console.log('response or items being returned from getAllPlanItems() in GET ', items)
+                    console.log('@plan-router.js: response or items being returned from getAllPlanItems() in GET => ', items)
                     res.json(items.map(item => serializePlanItem(item)))    
                 })
             //.catch(next)         
