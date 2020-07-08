@@ -32,7 +32,7 @@ describe.only('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    afterEach('cleanup', () => helpers.cleanTables(db))
+    //afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
@@ -184,20 +184,15 @@ describe.only('Plan Endpoints', function(){
             //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
             
 
-
             beforeEach('insert meal plan items', () => {
-                helpers.seedTables(db, testUsers, testItems, testPlanItem)
+                return helpers.seedTables(db, testUsers, testItems, testPlanItem)
             })
-
-            const authToken = helpers.makeAuthHeader(testUsers[0])
-            
-            console.log('@plan-endpoints.spec.js: authToken: ', authToken)
-        
-            it('GET /plan responds with 200 and all of the meal plan items', () => {                
-                    return supertest(app)
+                
+            it('GET /plan responds with 200 and all of the meal plan items', () => {                    
+                return supertest(app)
                         .get('/plan')
                         //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                        .set('Authorization', authToken)
+                        .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                         .expect(200, testPlanItem)
             })
         }) //end context 'Given there are menu items in the database'
