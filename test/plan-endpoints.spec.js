@@ -7,7 +7,7 @@ const supertest = require('supertest')
 const bcrypt = require('bcryptjs')
 
 
-describe('Plan Endpoints', function(){
+describe.only('Plan Endpoints', function(){
 
     let db
 
@@ -32,7 +32,7 @@ describe('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
@@ -193,7 +193,7 @@ describe('Plan Endpoints', function(){
             
             console.log('@plan-endpoints.spec.js: authToken: ', authToken)
         
-            it.only('GET /plan responds with 200 and all of the meal plan items', () => {                
+            it('GET /plan responds with 200 and all of the meal plan items', () => {                
                     return supertest(app)
                         .get('/plan')
                         //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
