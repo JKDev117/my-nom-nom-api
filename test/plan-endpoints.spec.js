@@ -45,6 +45,9 @@ describe('Plan Endpoints', function(){
                 testItems
             )
         })
+
+
+
         
         it('creates a plan item, responding with 201 and the new plan item', function() {
             //this.retries(3)
@@ -52,8 +55,25 @@ describe('Plan Endpoints', function(){
             const testUser = testUsers[0] //e.g. Dunder Mifflin
             const testItem = testItems[0] 
 
+
+            /* JSON format for testItem
+                {   
+                    "id": items[0].id, 
+                    "name": "Sausage, Eggs, Biscuit, & Hashbrowns", 
+                    "user_id": users[0].id, 
+                    "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", 
+                    "calories": 750, 
+                    "carbs": 53, 
+                    "protein": 25, 
+                    "fat": 49, 
+                    "category": "Breakfast"
+                }
+            */
+
             console.log('testItem being sent in POST /plan', testItem)
             console.log('testUser in POST /plan', testUser)
+
+
 
             return supertest(app)
                 .post('/plan')
@@ -159,20 +179,26 @@ describe('Plan Endpoints', function(){
             )
         })//End context 'Given no plan items'
         
-        context('Given there are meal plan items in the database', () => {
+        context.only('Given there are meal plan items in the database', () => {
             //console.log(`overview of this test for GET /plan >> given there are meal plan items in the db:
             //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
             
+
+
             beforeEach('insert meal plan items', () => {
-                helpers.seedTables(db, testUsers, testItems, testPlanItem)                       
+                helpers.seedTables(db, testUsers, testItems, testPlanItem)
             })
+
+            const authToken = helpers.makeAuthHeader(testUsers[0])
             
+            console.log('@plan-endpoints.spec.js: authToken: ', authToken)
+        
             it.only('GET /plan responds with 200 and all of the meal plan items', () => {                
-                return supertest(app)
-                    .get('/plan')
-                    //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .expect(200, testPlanItem)
+                    return supertest(app)
+                        .get('/plan')
+                        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                        .set('Authorization', authToken)
+                        .expect(200, testPlanItem)
             })
         }) //end context 'Given there are menu items in the database'
 
