@@ -17,7 +17,6 @@ describe.only('Plan Endpoints', function(){
         testPlanItem,
     } = helpers.makeItemsFixtures()
 
-
     //let token;
 
     before('make knex instance', () => {
@@ -32,7 +31,7 @@ describe.only('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
