@@ -12,6 +12,22 @@ const PlanService = {
         //console.log('user id @plan-service.js', user_id)
         return knex.select('*').from('plan_tb').where('user_id', user_id)
     },
+    removePlanItem(knex, req_body){
+        return knex.select('*').from('plan_tb')
+            .where(
+                {
+                    menu_item_id: req_body.id, 
+                    user_id: req_body.user_id,
+                    name: req_body.name,
+                    image_url: req_body.image_url,
+                    calories: req_body.calories,
+                    carbs: req_body.carbs,
+                    protein: req_body.protein,
+                    fat: req_body.fat,
+                    category: req_body.category
+                })
+            .first().delete()
+    }
     /*
     getById(knex, id, user_id){
         return knex

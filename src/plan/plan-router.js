@@ -29,7 +29,8 @@ planRouter
     .all(requireAuth)
     //POST
     .post(bodyParser, (req, res, next) => {
-  
+        //console.log('req.body', req.body)
+
         const { user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
         const newPlanItem = { user_id, name, image_url, calories, carbs, protein, fat, category }
   
@@ -113,6 +114,20 @@ planRouter
                 console.log(error)
                 next(error)
             })
+    })
+    //DELETE
+    .delete(bodyParser, (req, res, next) => {
+        console.log('req.body', req.body)
+        console.log('req.body.id', req.body.id)
+
+        PlanService.removePlanItem(
+            req.app.get('db'),
+            req.body
+        )
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
     })
     
     

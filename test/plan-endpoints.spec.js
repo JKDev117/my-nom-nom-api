@@ -44,9 +44,6 @@ describe('Plan Endpoints', function(){
                 testItems
             )
         })
-
-
-
         
         it('creates a plan item, responding with 201 and the new plan item', function() {
             //this.retries(3)
@@ -54,6 +51,7 @@ describe('Plan Endpoints', function(){
             const testUser = testUsers[0] //e.g. Dunder Mifflin
             const testItem = testItems[0] 
 
+            //console.log('testItem', testItem)
 
             /* JSON format for testItem
                 {   
@@ -71,8 +69,6 @@ describe('Plan Endpoints', function(){
 
             //console.log('testItem being sent in POST /plan', testItem)
             //console.log('testUser in POST /plan', testUser)
-
-
 
             return supertest(app)
                 .post('/plan')
@@ -221,7 +217,34 @@ describe('Plan Endpoints', function(){
         })
     })//end context 'Given an XSS attack menu item'
     */
-})//end describe 'GET /menu'  
+    })//end describe 'GET /menu'  
+    
+    //describe 'DELETE /menu'
+    describe.only('DELETE /plan', () => {
+        
+        const testItem = testItems[0] 
+
+        context('Given no plan items', () => {
+            
+            before('insert menu items', () => 
+                helpers.seedUsers(db, testUsers)
+            )
+
+            console.log('testItem', testItem)
+
+            it('responds with 404', () => {
+                return supertest(app)
+                    .delete('/plan')
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    .send(testItem)
+                    //.expect(404, done())
+                    //.expect(404)
+            })
+        })
+
+    })//end describe 'DELETE /plan'
+    
+    
     /*
     //describe 'GET /menu/:item_id'
     describe('GET /menu/:item_id', () => {
