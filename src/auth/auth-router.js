@@ -11,8 +11,8 @@ authRouter
         const { user_name, password } = req.body
         const loginUser = { user_name, password }
 
-        console.log('user_name @post /auth/login @auth-router.js', user_name)
-        console.log('password @post /auth/login @auth-router.js', password)
+        //console.log('user_name @post /auth/login @auth-router.js', user_name)
+        //console.log('password @post /auth/login @auth-router.js', password)
 
         for (const [key, value] of Object.entries(loginUser))
         if (value == null)

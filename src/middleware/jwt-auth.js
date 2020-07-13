@@ -31,7 +31,7 @@ function requireAuth(req, res, next) {
             */
         )
             .then(user => {
-                console.log('@jwt-auth.js: user returned from getUserWithUserName() =>', user)
+                //console.log('@jwt-auth.js: user returned from getUserWithUserName() =>', user)
                 if (!user){
                     logger.error('@jwt-auth.js: Unauthorized request because user is undefined')
                     return res.status(401).json({ error: 'Unauthorized request' })

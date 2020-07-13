@@ -182,7 +182,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
           expiresIn: process.env.JWT_EXPIRY,
           algorithm: 'HS256',
         })
-        console.log('token generated from makeAuthHeader call', token)    
+        //console.log('token generated from makeAuthHeader call', token)    
         return `Bearer ${token}`
 }
 

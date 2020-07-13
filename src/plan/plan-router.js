@@ -89,7 +89,7 @@ planRouter
         )
             .then(item => {
                 //console.log('req.originalUrl', req.originalUrl) //=> /plan
-                console.log('item returned from db after PlanService.addMenuItem', item)
+                //console.log('item returned from db after PlanService.addMenuItem', item)
                 res
                     .status(201)
                     //.location(path.posix.join(req.originalUrl, `/${item.id}`))
@@ -105,7 +105,7 @@ planRouter
         const knexInstance = req.app.get('db')
         PlanService.getAllPlanItems(knexInstance, req.user.id)
             .then(items => {
-                    console.log('@plan-router.js: response or items being returned from getAllPlanItems() in GET => ', items)
+                    //console.log('@plan-router.js: response or items being returned from getAllPlanItems() in GET => ', items)
                     res.json(items.map(item => serializePlanItem(item)))    
                 })
             //.catch(next)         

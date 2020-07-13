@@ -7,7 +7,7 @@ const supertest = require('supertest')
 const bcrypt = require('bcryptjs')
 
 
-describe.only('Plan Endpoints', function(){
+describe('Plan Endpoints', function(){
 
     let db
 
@@ -69,8 +69,8 @@ describe.only('Plan Endpoints', function(){
                 }
             */
 
-            console.log('testItem being sent in POST /plan', testItem)
-            console.log('testUser in POST /plan', testUser)
+            //console.log('testItem being sent in POST /plan', testItem)
+            //console.log('testUser in POST /plan', testUser)
 
 
 
@@ -178,7 +178,7 @@ describe.only('Plan Endpoints', function(){
             )
         })//End context 'Given no plan items'
         
-        context.only('Given there are meal plan items in the database', () => {
+        context('Given there are meal plan items in the database', () => {
             //console.log(`overview of this test for GET /plan >> given there are meal plan items in the db:
             //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
             
