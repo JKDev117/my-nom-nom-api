@@ -26,7 +26,8 @@ const PlanService = {
                     fat: req_body.fat,
                     category: req_body.category
                 })
-            .first().delete()
+            .first()
+            .delete()
     }
     /*
     getById(knex, id, user_id){
