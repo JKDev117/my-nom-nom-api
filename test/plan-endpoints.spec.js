@@ -31,7 +31,7 @@ describe('Plan Endpoints', function(){
 
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => helpers.cleanTables(db))
+    afterEach('cleanup', () => helpers.cleanTables(db))
     
     
     //describe 'POST /plan'
@@ -220,11 +220,11 @@ describe('Plan Endpoints', function(){
     })//end describe 'GET /menu'  
     
     //describe 'DELETE /menu'
-    describe('DELETE /plan', () => {
+    describe.only('DELETE /plan', () => {
         
         const testItem = testItems[0] 
 
-        context.only('Given no plan items', () => {
+        context('Given no plan items', () => {
             
             before('insert menu items', () => 
                 helpers.seedUsers(db, testUsers)
@@ -237,15 +237,17 @@ describe('Plan Endpoints', function(){
                     .delete('/plan')
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
                     .send(testItem)
-                    .expect(404)
+                    .expect(404, {error: {message: "Plan item doesn't exist!"}})
                     //.expect(404, done())
                     //.expect(404)
             })
         })//end context 'Given no plan items'
 
+
+
         context('Given there are meal plan items in the database', () => {
 
-            beforeEach('insert meal plan items', () => {
+            before('insert meal plan items', () => {
                 return helpers.seedTables(db, testUsers, testItems, testPlanItem)
             })
                 

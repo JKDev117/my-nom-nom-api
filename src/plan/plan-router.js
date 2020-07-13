@@ -120,6 +120,21 @@ planRouter
         console.log('req.body', req.body)
         console.log('req.body.id', req.body.id)
 
+        PlanService.searchForPlanItem(
+            req.app.get('db'),
+            req.body
+        )
+            .then(result => {
+                if(!result) {
+                    logger.error("Plan item doesn't exist!")
+                    return res.status(404).json({
+                        error: {message: "Plan item doesn't exist!"}
+                    })
+                }
+                //next()
+            })
+            .catch(err => console.log(err))
+
         PlanService.removePlanItem(
             req.app.get('db'),
             req.body
@@ -130,7 +145,30 @@ planRouter
             .catch(next)
     })
     
+/*
+    .all((req,res,next) => {
+        BookmarksService.getById(
+            req.app.get('db'),
+            req.params.bookmark_id
+        )
+            .then(bookmark => {
+                if(!bookmark) {
+                    logger.error(`Bookmark doesn't exist!`)
+                    return res.status(404).json({
+                        error: {message: `Bookmark doesn't exist!`}
+                    })
+                }
+                res.bookmark = bookmark //save the bookmark for the next middleware
+                next() //don't forget to call next so the next middleware happens
+            })
+            .catch(next)
+    })
+
+
+*/
+  
     
+
 /*    
 menuRouter
     .route('/menu/:item_id')
