@@ -31,58 +31,10 @@ planRouter
     .post(bodyParser, (req, res, next) => {
         //console.log('req.body', req.body)
 
-        const { user_id, name, image_url, calories, carbs, protein, fat, category } = req.body
-        const newPlanItem = { user_id, name, image_url, calories, carbs, protein, fat, category }
-  
-        if(newPlanItem.name == null){
-            logger.error(`Missing 'name' in request body`)
-            return res
-                    .status(400)
-                    .json({error: {message: `Missing 'name' in request body`}})
-        }
+        const { id, user_id } = req.body
+        const newPlanItem = { user_id }
 
-        if(newPlanItem.category == null){
-            logger.error(`Missing 'category' in request body`)
-            return res
-                    .status(400)
-                    .json({error: {message: `Missing 'category' in request body`}})
-        }
-        
-        const array = [calories, carbs, protein, fat]
-                
-        array.forEach(element => {
-          if(element!=undefined && (!Number.isInteger(element) || element < 0)){
-            logger.error(`Rating must be a number greater than zero`)
-            return res
-                .status(400)
-                .json({
-                    error: { message: `Rating must be a number greater than zero`}
-                })
-          }
-        })
-        
-        if(image_url!=undefined && image_url.length > 0 && !validate(image_url)){
-            logger.error(`url must be a valid URL`)
-            return res
-                .status(400)
-                .json({
-                    error: { message: `url must be a valid URL`}
-                })
-        }
-        
-        /*
-        for(const [key, value] of Object.entries(newMenuItem)){
-            if(value==null){
-                return res
-                    .status(400)
-                    .json({error: {message: `Missing '${key}' in request body`}})
-            }
-        }
-        
-        newMenuItem.name = name
-        */
-    
-        newPlanItem.menu_item_id = req.body.id
+        newPlanItem.menu_item_id = id
 
         PlanService.addMenuItem(
             req.app.get('db'),
@@ -94,7 +46,8 @@ planRouter
                 res
                     .status(201)
                     //.location(path.posix.join(req.originalUrl, `/${item.id}`))
-                    .json(serializePlanItem(item))
+                    //.json(serializePlanItem(item))
+                    .json(item)
             })
            .catch(next)
             
@@ -107,7 +60,7 @@ planRouter
         PlanService.getAllPlanItems(knexInstance, req.user.id)
             .then(items => {
                     //console.log('@plan-router.js: response or items being returned from getAllPlanItems() in GET => ', items)
-                    res.json(items.map(item => serializePlanItem(item)))    
+                    res.json(items.rows)    
                 })
             //.catch(next)         
             .catch(error => {
@@ -117,11 +70,11 @@ planRouter
     })
     //DELETE
     .delete(bodyParser, (req, res, next) => {
-        console.log('req.body', req.body)
-        console.log('req.body.id', req.body.id)
-        console.log('req.body.user_id', req.body.user_id)
+        //console.log('req.body', req.body)
+        //console.log('req.body.id', req.body.id)
+        //console.log('req.body.user_id', req.body.user_id)
 
-        
+        /*
         PlanService.searchForPlanItem(
             req.app.get('db'),
             req.body
@@ -136,7 +89,7 @@ planRouter
                 //next()
             })
             .catch(err => console.log(err))
-        
+        */
 
         PlanService.removePlanItem(
             req.app.get('db'),
@@ -147,6 +100,7 @@ planRouter
             })
             .catch(next)
     })//end delete
+    
     
 /*
     .all((req,res,next) => {
@@ -169,8 +123,7 @@ planRouter
 
 
 */
-  
-    
+
 
 /*    
 menuRouter

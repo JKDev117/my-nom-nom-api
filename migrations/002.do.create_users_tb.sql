@@ -11,6 +11,6 @@ CREATE TABLE users_tb (
 ALTER TABLE menu_tb
     ADD COLUMN
         user_id INTEGER REFERENCES users_tb(id)
-        ON DELETE SET NULL;
+        ON DELETE CASCADE;
 
 

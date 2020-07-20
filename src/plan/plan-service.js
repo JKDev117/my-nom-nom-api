@@ -10,7 +10,21 @@ const PlanService = {
     },
     getAllPlanItems(knex, user_id) {
         //console.log('user id @plan-service.js', user_id)
-        return knex.select('*').from('plan_tb').where('user_id', user_id)
+        //return knex.select('*').from('plan_tb').where('user_id', user_id)
+        return knex.raw(
+            `SELECT
+                p.id,
+                p.menu_item_id,
+                m.name,
+                m.image_url,
+                m.calories,
+                m.carbs,
+                m.protein,
+                m.fat,
+                m.category
+            FROM plan_tb p
+            JOIN menu_tb m
+            ON p.menu_item_id = m.id`)
     },
     searchForPlanItem(knex, req_body){
         return knex
@@ -31,21 +45,9 @@ const PlanService = {
             .first()
     },
     removePlanItem(knex, req_body){
-        /*
-        return knex.schema.raw(`DELETE TOP 1 * FROM plan_tb 
-            WHERE menu_item_id = "${req_body.menu_item_id}" 
-            AND user_id = "${req_body.user_id}"
-            AND name = "${req_body.name}"
-            AND image_url = "${req_body.image_url}"
-            AND calories = "${req_body.calories}"
-            AND carbs = "${req_body.carbs}"
-            AND protein = "${req_body.protein}"
-            AND fat = "${req_body.fat}"
-            AND category = "${req_body.category}"
-            `)
-        */    
-        console.log('req_body.menu_item_idy @plan-service.js @removePlanItem', req_body.menu_item_id)
-        console.log('req_body @plan-service.js @removePlanItem', req_body)
+
+        //console.log('req_body.menu_item_idy @plan-service.js @removePlanItem', req_body.menu_item_id)
+        //console.log('req_body @plan-service.js @removePlanItem', req_body)
 
         return knex
             .select('*')
