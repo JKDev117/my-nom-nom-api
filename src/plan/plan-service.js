@@ -22,6 +22,7 @@ const PlanService = {
             `SELECT
                 p.id,
                 p.menu_item_id,
+                p.user_id,
                 m.name,
                 m.image_url,
                 m.calories,
@@ -52,29 +53,14 @@ const PlanService = {
             .first()
     },
     removePlanItem(knex, req_body){
-
         //console.log('req_body.menu_item_idy @plan-service.js @removePlanItem', req_body.menu_item_id)
         //console.log('req_body @plan-service.js @removePlanItem', req_body)
-
         return knex
             .select('*')
             .from('plan_tb')
             .where(
-                {
-                    menu_item_id: req_body.menu_item_id, 
-                    user_id: req_body.user_id,
-                    name: req_body.name,
-                    image_url: req_body.image_url,
-                    calories: req_body.calories,
-                    carbs: req_body.carbs,
-                    protein: req_body.protein,
-                    fat: req_body.fat,
-                    category: req_body.category
-                }
-            )
-            .first()
+                { id: req_body.id, })
             .delete()
-         
     }
     /*
     getById(knex, id, user_id){
