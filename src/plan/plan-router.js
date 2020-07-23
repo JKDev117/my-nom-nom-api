@@ -39,7 +39,7 @@ planRouter
         PlanService.addMenuItem(
             req.app.get('db'),
             newPlanItem
-        )   /*
+        )   
             .then(item => {
                 //console.log('req.originalUrl', req.originalUrl) //=> /plan
                 //console.log('item returned from db after PlanService.addMenuItem', item)
@@ -49,16 +49,14 @@ planRouter
                     //.json(serializePlanItem(item))
                     .json(item)
             })
-           .catch(next)
-           */
-            .then(PlanService.getPlanItemsCount(req.app.get('db'))
-            .then(items => {
-                res.json(items)
-            })
             .catch(next)
-        )
-        
-
+            /*
+            .then(PlanService.getPlanItemsCount(req.app.get('db'))
+                .then(items => {
+                    res.json(items)
+                })
+                .catch(next)
+            )*/
     })//end POST /plan
     //GET
     .get((req,res,next) => {

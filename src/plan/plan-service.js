@@ -7,14 +7,14 @@ const PlanService = {
             .then(rows => {
                 return rows[0]
             })
-    },
+    },/*
     getPlanItemsCount(knex){
         return knex
             .from('plan_tb')
             .select('menu_item_id')
             .count('*')
             .groupBy('menu_item_id')
-    },
+    },*/
     getAllPlanItems(knex, user_id) {
         //console.log('user id @plan-service.js', user_id)
         //return knex.select('*').from('plan_tb').where('user_id', user_id)
