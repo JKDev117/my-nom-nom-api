@@ -76,11 +76,11 @@ planRouter
     })
     //DELETE
     .delete(bodyParser, (req, res, next) => {
-        //console.log('req.body', req.body)
-        //console.log('req.body.id', req.body.id)
-        //console.log('req.body.user_id', req.body.user_id)
+        console.log('req.body', req.body)
+        console.log('req.body.id', req.body.id)
+        console.log('req.body.user_id', req.body.user_id)
 
-        /*
+        
         PlanService.searchForPlanItem(
             req.app.get('db'),
             req.body
@@ -95,15 +95,15 @@ planRouter
                 //next()
             })
             .catch(err => console.log(err))
-        */
+        
 
         PlanService.removePlanItem(
             req.app.get('db'),
             req.body
         )
-            .then(() => {
+            .then(() => 
                 res.status(204).end()
-            })
+            )
             .catch(next)
     })//end delete
     

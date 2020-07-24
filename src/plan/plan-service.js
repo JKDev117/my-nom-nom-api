@@ -39,17 +39,7 @@ const PlanService = {
             .select('*')
             .from('plan_tb')
             .where(
-                {
-                    menu_item_id: req_body.menu_item_id, 
-                    user_id: req_body.user_id,
-                    name: req_body.name,
-                    image_url: req_body.image_url,
-                    calories: req_body.calories,
-                    carbs: req_body.carbs,
-                    protein: req_body.protein,
-                    fat: req_body.fat,
-                    category: req_body.category
-                })
+                { id: req_body.id, })
             .first()
     },
     removePlanItem(knex, req_body){
