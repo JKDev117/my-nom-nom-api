@@ -28,7 +28,6 @@ describe('Menu Endpoints', function(){
     //afterEach('cleanup', () => db('menu_tb').truncate())
     afterEach('cleanup', () => helpers.cleanTables(db))
 
-
     //describe 'GET /menu'
     describe('GET /menu', () => {
         context('Given no menu items', () => {
@@ -171,12 +170,11 @@ describe('Menu Endpoints', function(){
                 .send(maliciousMenuItem)
                 .expect(201)
                 .expect(response => {
-                    //expect(response.body.name).to.eql(expectedMenuItem.name)
+                    expect(response.body.name).to.eql(expectedMenuItem.name)
                     expect(response.body.image_url).to.eql(expectedMenuItem.image_url)
                 })
         })
     })//end describe 'POST /menu'
-
 
 
     //describe 'GET /menu/:item_id'
@@ -202,7 +200,6 @@ describe('Menu Endpoints', function(){
                 helpers.seedTables(db, testUsers, testItems)
             )
 
-
             it('responds with 200 and the specified menu item', () => {
                 const itemId = 1
                 const expectedMenuItem = testItems[itemId - 1]
@@ -220,8 +217,6 @@ describe('Menu Endpoints', function(){
         context('Given no menu items', () => {
             //beforeEach(() => db.into('users_tb').insert(testUsers))
             beforeEach(() => helpers.seedUsers(db, testUsers))
-
-
             it(`responds with 404`, () => {
                 const itemId = 123456
                 return supertest(app)
@@ -234,11 +229,9 @@ describe('Menu Endpoints', function(){
 
         context('Given there are menu items in the database', () => {
             //const testMenuItems = createMenu()
-            
             beforeEach('insert menu items', () => 
                 helpers.seedTables(db, testUsers, testItems)
             )
-
             it('responds with 204 and removes the menu item', () => {
                 const idToRemove = 1
                 const expectedMenuItems = testItems.filter(item => item.id !== idToRemove)
@@ -255,9 +248,9 @@ describe('Menu Endpoints', function(){
                             .expect(expectedMenuItems)
                     )
             })
-
         })//end context 'Given there are menu items in the database'
     }) //end describe 'DELETE /menu/:item_id'
+
 
     describe(`PATCH /menu/:item_id`, () => {
         context('Given no menu items', () => {
