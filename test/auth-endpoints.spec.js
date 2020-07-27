@@ -4,7 +4,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 
 
-describe('Auth Endpoints', function() {
+describe.only('Auth Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsers()
@@ -53,7 +53,7 @@ describe('Auth Endpoints', function() {
     })
 
     it(`responds 400 'invalid user_name or password' when bad user_name`, () => {
-        const userInvalidUser = { user_name: 'user-not', password: 'existy' }
+        const userInvalidUser = { user_name: 'user-not', password: testUser.password }
         return supertest(app)
             .post('/auth/login')
             .send(userInvalidUser)
@@ -65,7 +65,7 @@ describe('Auth Endpoints', function() {
           return supertest(app)
             .post('/auth/login')
             .send(userInvalidPass)
-            //.expect(400, { error: `Incorrect user_name or password` })
+            .expect(400, { error: `Incorrect user_name or password` })
     })
 
     it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
@@ -89,12 +89,11 @@ describe('Auth Endpoints', function() {
               authToken: expectedToken,
             })
     })
-
-
-
   })//end describe 'POST /auth/login'
 
-  describe(`POST /api/auth/refresh`, () => {
+
+
+  describe(`POST /auth/refresh`, () => {
     beforeEach('insert users', () =>
       helpers.seedUsers(
         db,

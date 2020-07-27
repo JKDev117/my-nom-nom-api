@@ -220,7 +220,7 @@ describe('Plan Endpoints', function(){
     })//end describe 'GET /menu'  
     
     //describe 'DELETE /menu'
-    describe.only('DELETE /plan', () => {
+    describe('DELETE /plan', () => {
         
         const testItem = testItems[0] 
 
