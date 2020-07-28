@@ -131,7 +131,7 @@ describe('Users Endpoints', function() {
     })//end context `User Validation`
 
     context(`Happy path`, () => {
-       it(`responds 201, serialized user, storing bcryped password`, () => {
+       it(`responds 201, serialized user, storing bcrypted password`, () => {
          const newUser = {
            first_name: 'test first_name',
            last_name: 'test last_name',

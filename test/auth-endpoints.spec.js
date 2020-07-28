@@ -53,7 +53,7 @@ describe('Auth Endpoints', function() {
     })
 
     it(`responds 400 'invalid user_name or password' when bad user_name`, () => {
-        const userInvalidUser = { user_name: 'user-not', password: 'existy' }
+        const userInvalidUser = { user_name: 'user-not', password: testUser.password }
         return supertest(app)
             .post('/auth/login')
             .send(userInvalidUser)
@@ -89,12 +89,11 @@ describe('Auth Endpoints', function() {
               authToken: expectedToken,
             })
     })
-
-
-
   })//end describe 'POST /auth/login'
 
-  describe(`POST /api/auth/refresh`, () => {
+
+
+  describe(`POST /auth/refresh`, () => {
     beforeEach('insert users', () =>
       helpers.seedUsers(
         db,

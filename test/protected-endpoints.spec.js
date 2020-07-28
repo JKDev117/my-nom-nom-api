@@ -9,6 +9,7 @@ describe(`Protected endpoints`, () => {
     const {
         testUsers,
         testItems,
+        testPlanItem,
     } = helpers.makeItemsFixtures()
 
     before('make knex instance', () => {
@@ -21,18 +22,20 @@ describe(`Protected endpoints`, () => {
 
     after('disconnect from db', () => db.destroy())
 
-    //before('clean the table', () => db('menu_tb').truncate())
     before('cleanup', () => helpers.cleanTables(db))
 
-    //afterEach('cleanup', () => db('menu_tb').truncate())
     afterEach('cleanup', () => helpers.cleanTables(db))
-
 
     beforeEach('insert menu items', () =>
       helpers.seedTables(db, testUsers, testItems)
     )
 
     const protectedEndpoints = [
+        {
+          name: 'POST /auth/refresh',
+          path: '/auth/refresh',
+          method: supertest(app).post,
+        },
         {
           name: 'GET /menu',
           path: '/menu',
@@ -42,7 +45,7 @@ describe(`Protected endpoints`, () => {
           name: 'POST /menu',
           path: '/menu',
           method: supertest(app).post,  
-          },
+        },
         {
           name: 'GET /menu/:item_id',
           path: '/menu/1',
@@ -59,9 +62,19 @@ describe(`Protected endpoints`, () => {
           method: supertest(app).delete,  
         },
         {
-          name: 'POST /auth/refresh',
-          path: '/auth/refresh',
+          name: 'GET /plan',
+          path: '/plan',
+          method: supertest(app).get,
+        },
+        {
+          name: 'POST /plan',
+          path: '/plan',
           method: supertest(app).post,
+        },
+        {
+          name: 'DELETE /plan',
+          path: '/plan',
+          method: supertest(app).delete,
         },
     ]
   

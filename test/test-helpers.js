@@ -8,11 +8,11 @@ function makeUsers(){
             first_name: 'Dunder',
             last_name: 'Mifflin',
             user_name: 'dunder_mifflin',
-            password: 'password'
+            password: 'password',
+            date_created: '2029-01-22T16:28:32.615Z',
         },
     ]
 }
-
 
 function createMenu(users){
     return [
@@ -29,6 +29,17 @@ function createMenu(users){
         {id: 9, name: "Ribeye Steak", user_id: users[0].id, image_url:"https://www.harrisranch.com/wp-content/uploads/2019/01/photo_ribeye_steak4SMALL_1024x1024.jpg", calories: 810, carbs: 0, protein: 96, fat: 54, category: "Dinner"},
     ]
 }
+
+function createPlanItem(users, items){
+    return [
+        { 
+          id: 1,
+          menu_item_id: items[0].id, 
+          user_id: users[0].id, 
+        }
+    ]
+}
+
 
 
 function makeMaliciousMenuItem(user){
@@ -60,23 +71,40 @@ function makeMaliciousMenuItem(user){
 function makeItemsFixtures(){
     const testUsers = makeUsers()
     const testItems = createMenu(testUsers)
-    return { testUsers, testItems }
+    const testPlanItem = createPlanItem(testUsers, testItems)
+    return { testUsers, testItems, testPlanItem }
 }
 
 function cleanTables(db) {
-    return db.raw(
-      `TRUNCATE
-        menu_tb,
-        users_tb
-        RESTART IDENTITY CASCADE`
-    )
+    return db.transaction(trx =>
+        trx.raw(
+        `TRUNCATE
+            menu_tb,
+            users_tb,
+            plan_tb
+            RESTART IDENTITY CASCADE`
+        )
+        //TRUNCATE -- empty a table or set of tables
+        //RESTART IDENTITY - Automatically restart sequences owned by columns of the truncated table(s).
+        //CASCADE - Automatically truncate all tables that have foreign-key references to any of the named tables, or to any tables added to the group due to CASCADE.
+    /*    
+    .then(() =>
+      Promise.all([
+        trx.raw(`ALTER SEQUENCE menu_tb_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`ALTER SEQUENCE users_tb_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`SELECT setval('menu_tb_id_seq', 0)`),
+        trx.raw(`SELECT setval('users_tb_id_seq', 0)`),
+      ])
+    )*/
+  )
 }
+
 
 function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
         ...user,
         password: bcrypt.hashSync(user.password, 12)
-        }))
+    }))
     return db.into('users_tb').insert(preppedUsers)
     .then(() =>
         // update the auto sequence to stay in sync
@@ -85,27 +113,41 @@ function seedUsers(db, users) {
             [users[users.length - 1].id],
         )
     )
+    .catch(error => console.log(error))
 }
 
 
-function seedTables(db, users, items) {
-    /*return db
+function seedTables(db, users, items, planItems=[]) {
+    //console.log('db @test-helpers.js @seedTables', db)
+    //console.log('users @test-helpers.js @seedTables', users)
+    //console.log('items @test-helpers.js @seedTables', items)
+    /*
+    return db
       .into('users_tb')
       .insert(users)
       .then(() =>
         db
           .into('menu_tb')
           .insert(items)
-      )*/
-    //use a transaction to group the queries and auto rollback on any failure  
+      )
+      */
+    //use a transaction to group the queries and auto rollback on any failure 
     return db.transaction(async trx => {
-        await seedUsers(trx, users)
-        await trx.into('menu_tb').insert(items)
-        //update the auto sequence to match the forced id values
-        await trx.raw(
-            `SELECT setval('menu_tb_id_seq', ?)`,
-            [items[items.length -1].id],
-        ) 
+        try {
+            await seedUsers(trx, users)
+            await trx.into('menu_tb').insert(items)
+            //update the auto sequence to match the forced id values
+            await trx.raw(
+                `SELECT setval('menu_tb_id_seq', ?)`,
+                [items[items.length -1].id]
+            )  
+            //only inserts plan items if there are some
+            if(planItems.length){
+                await trx.into('plan_tb').insert(planItems)
+            } 
+        } catch(e){
+            console.log("error", e)
+        }
     })  
 }
 
@@ -124,17 +166,23 @@ function seedMaliciousItem(db, user, item) {
 
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-    const token = jwt.sign({ user_id: user.id }, secret, {
+    const token = jwt.sign(
+        { user_id: user.id }, //payload
+        secret, //secret
+        {
           subject: user.user_name,
+          expiresIn: process.env.JWT_EXPIRY,
           algorithm: 'HS256',
-        })    
+        })
+        //console.log('token generated from makeAuthHeader call', token)    
         return `Bearer ${token}`
 }
 
 
 module.exports = {
     makeUsers,
-    createMenu, 
+    createMenu,
+    createPlanItem, 
     makeMaliciousMenuItem,
     
     makeItemsFixtures,

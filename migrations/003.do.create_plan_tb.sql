@@ -1,0 +1,10 @@
+CREATE TABLE plan_tb (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users_tb(id) ON DELETE CASCADE NOT NULL,
+    menu_item_id INTEGER REFERENCES menu_tb(id) ON DELETE CASCADE NOT NULL
+);
+
+
+
+
+
