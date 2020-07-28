@@ -51,8 +51,6 @@ describe('Plan Endpoints', function(){
             const testUser = testUsers[0] //e.g. Dunder Mifflin
             const testItem = testItems[0] 
 
-            //console.log('testItem', testItem)
-
             /* JSON format for testItem
                 {   
                     "id": items[0].id, 
@@ -76,13 +74,11 @@ describe('Plan Endpoints', function(){
                 .send(testItem)
                 .expect(201)
                 .expect(res => {
-                    //console.log('res @plan-endpoints.spec.js @POST /plan @201 test', res)
+                    console.log('res.body @plan-endpoints.spec.js @POST /plan @201 test', res.body)
                     expect(res.body).to.have.property('user_id')
                     expect(res.body).to.have.property('menu_item_id')
-                    expect(res.body.name).to.eql(testItem.name)
                     expect(res.body.user_id).to.eql(testUser.id)
                     expect(res.body.menu_item_id).to.eql(testItem.id)
-                    expect(res.body.category).to.eql(testItem.category)
                 })
                 .then(res =>
                     // removed
@@ -96,13 +92,11 @@ describe('Plan Endpoints', function(){
                     db
                         .from('plan_tb')
                         .select('*')
-                        .where({menu_item_id: res.body.menu_item_id})
-                        .first()
-                        .then(row => {
-                            expect(row.name).to.eql(testItem.name)
-                            expect(row.user_id).to.eql(testUser.id)
-                            expect(row.menu_item_id).to.eql(testItem.id)
-                            expect(row.category).to.eql(testItem.category)
+                        .where({ id: res.body.id })
+                        //.first()
+                        .then(row => {                            
+                            expect(row[0].user_id).to.eql(testUser.id)
+                            expect(row[0].menu_item_id).to.eql(testItem.id)
                         }) 
                 )
         })//end it 'creates a plan item, responding with 201 and the new plan item'
@@ -153,7 +147,6 @@ describe('Plan Endpoints', function(){
     //describe 'GET /menu'
     describe('GET /plan', () => {
 
-
         context('Given no plan items', () => {
             //console.log(`overview of this test for GET /plan >> given there no plan items in the db:
             //seedTables@test-helpers.js -> makeAuthHeader@test-helpers.js -> requireAuth@jwt-auth.js -> get@plan.router`)
@@ -182,15 +175,26 @@ describe('Plan Endpoints', function(){
             beforeEach('insert meal plan items', () => {
                 return helpers.seedTables(db, testUsers, testItems, testPlanItem)
             })
+
+            const customReturnPlanItem = [{
+                ...testPlanItem[0],
+                name: testItems[0].name,
+                image_url: testItems[0].image_url,
+                calories: testItems[0].calories,
+                carbs: testItems[0].carbs,
+                protein: testItems[0].protein,
+                fat: testItems[0].fat,
+                category: testItems[0].category,
+            }]
                 
             it('GET /plan responds with 200 and all of the meal plan items', () => {                    
                 return supertest(app)
                         .get('/plan')
                         //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                        .expect(200, testPlanItem)
-            })
-        }) //end context 'Given there are menu items in the database'
+                        .expect(200, customReturnPlanItem)
+            }) 
+        })//end context 'Given there are menu items in the database'
 
     /*
     context('Given an XSS attack menu item', () => {
@@ -226,24 +230,22 @@ describe('Plan Endpoints', function(){
 
         context('Given no plan items', () => {
             
-            before('insert menu items', () => 
+            before('insert user', () => 
                 helpers.seedUsers(db, testUsers)
             )
 
-            console.log('testItem', testItem)
+            //('testItem', testItem)
 
             it('responds with 404', () => {
                 return supertest(app)
                     .delete('/plan')
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                    .send(testItem)
+                    .send(testPlanItem[0])
                     .expect(404, {error: {message: "Plan item doesn't exist!"}})
                     //.expect(404, done())
                     //.expect(404)
             })
         })//end context 'Given no plan items'
-
-
 
         context('Given there are meal plan items in the database', () => {
 
@@ -256,7 +258,7 @@ describe('Plan Endpoints', function(){
                         .delete('/plan')
                         //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-                        .send(testItem)
+                        .send(testPlanItem[0])
                         .expect(204)
             })
         }) //end context 'Given there are menu items in the database'

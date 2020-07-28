@@ -2,7 +2,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe(`Protected endpoints`, () => {
+describe.only(`Protected endpoints`, () => {
     
     let db
 

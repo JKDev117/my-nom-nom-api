@@ -14,7 +14,6 @@ function makeUsers(){
     ]
 }
 
-
 function createMenu(users){
     return [
         {id: 1, name: "Sausage, Eggs, Biscuit, & Hashbrowns", user_id: users[0].id, image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", calories: 750, carbs: 53, protein: 25, fat: 49, category: "Breakfast"},
@@ -33,18 +32,12 @@ function createMenu(users){
 
 function createPlanItem(users, items){
     return [
-        { menu_item_id: items[0].id, 
-          name: "Sausage, Eggs, Biscuit, & Hashbrowns", 
+        { 
+          id: 1,
+          menu_item_id: items[0].id, 
           user_id: users[0].id, 
-          image_url:"https://media-cdn.tripadvisor.com/media/photo-s/07/1d/2a/a7/spooner-family-restaurant.jpg", 
-          calories: 750, 
-          carbs: 53, 
-          protein: 25, 
-          fat: 49, 
-          category: "Breakfast"
         }
     ]
-
 }
 
 
@@ -123,6 +116,7 @@ function seedUsers(db, users) {
     .catch(error => console.log(error))
 }
 
+
 function seedTables(db, users, items, planItems=[]) {
     //console.log('db @test-helpers.js @seedTables', db)
     //console.log('users @test-helpers.js @seedTables', users)
@@ -152,12 +146,10 @@ function seedTables(db, users, items, planItems=[]) {
                 await trx.into('plan_tb').insert(planItems)
             } 
         } catch(e){
-            console.log("error here", e)
+            console.log("error", e)
         }
-           
     })  
 }
-
 
 
 function seedMaliciousItem(db, user, item) {
