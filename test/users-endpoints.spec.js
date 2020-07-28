@@ -4,7 +4,7 @@ const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
 const { expect } = require('chai')
 
-describe('Users Endpoints', function() {
+describe.only('Users Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsers()
