@@ -201,6 +201,7 @@ menuRouter
             req.user.id
         )
             .then(numRowsAffected => {
+                //console.log('numRowsAffected', numRowsAffected)
                 res.status(204).end()
             })
             .catch(next)
