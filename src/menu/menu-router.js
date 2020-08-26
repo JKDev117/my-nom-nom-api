@@ -55,16 +55,18 @@ menuRouter
         
         const array = [calories, carbs, protein, fat]
                 
-        array.forEach(element => {
-          if(element!=undefined && (!Number.isInteger(element) || element < 0)){
-            //logger.error(`Rating must be a number greater than zero`)
-            return res
-                .status(400)
-                .json({
-                    error: { message: `Rating must be a number greater than zero`}
-                })
+        for(let element of array){
+          if(element!=undefined){
+                if(!Number.isInteger(element) || Number(element) < 0){
+                    logger.error(`Calories, carbs, protein, or fat must be a number greater than zero`)
+                    return res
+                        .status(400)
+                        .json({
+                            error: { message: `Calories, carbs, protein, or fat must be a number greater than zero`}
+                        })
+                }
           }
-        })
+        }
         
 
         if(image_url!=undefined && image_url.length > 0 && !validate(image_url)){
@@ -94,14 +96,13 @@ menuRouter
             req.app.get('db'),
             newMenuItem
         )
-            .then(item => {
+            .then(item => 
                 res
                     .status(201)
                     .location(path.posix.join(req.originalUrl, `/${item.id}`))
                     .json(serializeMenuItem(item))
-            })
-            .catch(next)
-            
+            )
+            .catch(next)      
     })
     
     
@@ -172,7 +173,8 @@ menuRouter
         
         
         const array = [calories, carbs, protein, fat]
-                
+        
+        /*
         array.forEach((element, i) => {
           if(element!=undefined && element!=null && element.length > 0 && (!Number.isInteger(element) || element < 0)){
             logger.error(`calories, carbs, protein, or fat category must be a NUMBER greater than zero`)
@@ -182,7 +184,20 @@ menuRouter
                     error: { message: `calories, carbs, protein, or fat category must be a NUMBER greater than zero`}
                 })
           }
+        })*/
+
+        array.forEach(element => {
+            if(element!=undefined){
+                  if(!Number.isInteger(element) || element < 0){
+                      logger.error(`Calories, carbs, protein, or fat must be a number greater than zero`)
+                      return res.status(400)
+                          .json({
+                              error: { message: `Calories, carbs, protein, or fat must be a number greater than zero`}
+                          })
+                  }
+            }
         })
+
                 
         if(image_url!=undefined && image_url.length > 0  && !validate(image_url)){
             logger.error(`url must be a valid URL`)

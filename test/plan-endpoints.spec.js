@@ -38,11 +38,7 @@ describe('Plan Endpoints', function(){
     describe('POST /plan', () => {
     
         beforeEach('insert menu items', () => { 
-            helpers.seedTables(
-                db, 
-                testUsers, 
-                testItems
-            )
+            return helpers.seedTables(db, testUsers, testItems)
         })
         
         it('creates a plan item, responding with 201 and the new plan item', function() {

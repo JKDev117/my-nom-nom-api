@@ -1,6 +1,6 @@
 const MenuService = {
     getAllMenuItems(knex, user_id) {
-        return knex.select('*').from('menu_tb').where('user_id', user_id)
+        return knex.select('*').from('menu_tb').where('user_id', user_id).orderBy('id')
     },
     addMenuItem(knex, newMenuItem){
         return knex
