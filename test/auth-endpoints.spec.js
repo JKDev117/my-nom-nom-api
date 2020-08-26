@@ -97,7 +97,6 @@ describe('Auth Endpoints', function() {
             }
           )
           */
-          
 
           return supertest(app)
             .post('/auth/login')

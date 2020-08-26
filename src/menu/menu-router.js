@@ -171,9 +171,7 @@ menuRouter
                     .json({error: {message: `Missing 'category' in request body`}})
         }
         
-        
-        const array = [calories, carbs, protein, fat]
-        
+                
         /*
         array.forEach((element, i) => {
           if(element!=undefined && element!=null && element.length > 0 && (!Number.isInteger(element) || element < 0)){
@@ -186,17 +184,20 @@ menuRouter
           }
         })*/
 
-        array.forEach(element => {
-            if(element!=undefined){
-                  if(!Number.isInteger(element) || element < 0){
-                      logger.error(`Calories, carbs, protein, or fat must be a number greater than zero`)
-                      return res.status(400)
-                          .json({
-                              error: { message: `Calories, carbs, protein, or fat must be a number greater than zero`}
-                          })
-                  }
-            }
-        })
+        const array = [calories, carbs, protein, fat]
+                
+        for(let element of array){
+          if(element!=undefined){
+                if(!Number.isInteger(element) || Number(element) < 0){
+                    logger.error(`Calories, carbs, protein, or fat must be a number greater than zero`)
+                    return res
+                        .status(400)
+                        .json({
+                            error: { message: `Calories, carbs, protein, or fat must be a number greater than zero`}
+                        })
+                }
+          }
+        }
 
                 
         if(image_url!=undefined && image_url.length > 0  && !validate(image_url)){
