@@ -8,7 +8,7 @@ function makeUsers(){
             first_name: 'Dunder',
             last_name: 'Mifflin',
             user_name: 'dunder_mifflin',
-            password: 'password',
+            password: 'Password1!',
             date_created: '2029-01-22T16:28:32.615Z',
         },
     ]

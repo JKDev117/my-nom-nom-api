@@ -8,7 +8,7 @@ TRUNCATE
 
 INSERT INTO users_tb (first_name, last_name, user_name, password)
 VALUES
-    ('Dunder', 'Mifflin', 'dunder_mifflin', '$2a$12$2ubHMt7sxFA8HW7jLCstc.O3ZFugvrE9ktgMxsIIORnJ0nFUMWFzW');
+    ('Dunder', 'Mifflin', 'dunder_mifflin', '$2a$12$qXPyWzMaEHendl0y.ARQQuNa0zx5ZlzrzgwlAGZjdNCV5a1fTtczK');
 
 
 INSERT INTO menu_tb (name, user_id, image_url, calories, carbs, protein, fat, category)

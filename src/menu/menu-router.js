@@ -52,6 +52,12 @@ menuRouter
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
+
+        if(newMenuItem.category != ('Breakfast' || 'Lunch' || 'Dinner')){
+            return res
+                    .status(400)
+                    .json({error: {message: `Category must be Breakfast, Lunch, or Dinner`}})
+        }
         
         const array = [calories, carbs, protein, fat]
                 
@@ -170,7 +176,12 @@ menuRouter
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
-        
+
+        if(itemToUpdate.category != ('Breakfast' || 'Lunch' || 'Dinner')){
+            return res
+                    .status(400)
+                    .json({error: {message: `Category must be Breakfast, Lunch, or Dinner`}})
+        }
                 
         /*
         array.forEach((element, i) => {
