@@ -8,7 +8,6 @@ const validate = require('url-validator')
 const logger = require('../logger')
 const { requireAuth } = require('../middleware/jwt-auth')
 
-
 const serializeMenuItem = item => ({
     id: item.id,
     name: xss(item.name),
@@ -21,12 +20,11 @@ const serializeMenuItem = item => ({
     category: item.category,
 })
 
-
 menuRouter
     .route('/menu')
     //ALL
     .all(requireAuth)
-    //GET
+    //GET /menu
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
         MenuService.getAllMenuItems(knexInstance, req.user.id)
@@ -35,23 +33,26 @@ menuRouter
             })
             .catch(next)
     })
-    //POST
+    //POST /menu
     .post(bodyParser, (req, res, next) => {
         const { name, image_url, calories, carbs, protein, fat, category } = req.body
         const newMenuItem = { name, image_url, calories, carbs, protein, fat, category }
 
+        //if name of the menu item is missing
         if(newMenuItem.name == null){
             return res
                     .status(400)
                     .json({error: {message: `Missing 'name' in request body`}})
         }
 
+        //if a category is not selected
         if(newMenuItem.category == null){
             return res
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
 
+        //if the category selected is not a valid category
         if(newMenuItem.category != ('Breakfast' || 'Lunch' || 'Dinner')){
             return res
                     .status(400)
@@ -59,7 +60,8 @@ menuRouter
         }
         
         const array = [calories, carbs, protein, fat]
-                
+        
+        //if calories, carbs, protein, and/or fat is provided by the user
         for(let element of array){
           if(element!=undefined){
                 if(!Number.isInteger(element) || Number(element) < 0){
@@ -73,7 +75,7 @@ menuRouter
           }
         }
         
-
+        //if an image url link is provided by the user
         if(image_url!=undefined && image_url.length > 0 && !validate(image_url)){
             logger.error(`url must be a valid URL`)
             return res
@@ -83,9 +85,9 @@ menuRouter
                 })
         }
 
-
         newMenuItem.user_id = req.user.id
 
+        //add the menu item to menu_tb
         MenuService.addMenuItem(
             req.app.get('db'),
             newMenuItem
@@ -103,8 +105,7 @@ menuRouter
 menuRouter
     .route('/menu/:item_id')
     //ALL
-    .all(requireAuth)
-    .all((req, res, next) => {
+    .all(requireAuth, (req, res, next) => {
         MenuService.getById(
             req.app.get('db'),
             req.params.item_id,
@@ -121,11 +122,11 @@ menuRouter
         })
         .catch(next)
     })
-    //GET
+    //GET /menu/:item_id
     .get((req, res, next) => 
         res.json(serializeMenuItem(res.item)) 
     )
-    //DELETE
+    //DELETE /menu/:item_id
     .delete((req, res, next) => {
         MenuService.deleteMenuItem(
             req.app.get('db'),
@@ -137,34 +138,36 @@ menuRouter
             })
             .catch(next)
     })
-    //PATCH
+    //PATCH /menu/:item_id
     .patch(bodyParser, (req, res, next) => {
         const { name, image_url, calories, carbs, protein, fat, category } = req.body
         const itemToUpdate = { name, image_url, calories, carbs, protein, fat, category }
         const numberOfValues = Object.values(itemToUpdate).filter(Boolean).length
 
-        
         if(numberOfValues === 0){
-            logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`)
+            logger.error(`Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', and/or 'category'`)
             return res.status(400).json({
                 error: {
-                    message: `Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', or 'category'`
+                    message: `Request body must contain either 'name', 'image_url', 'calories', 'carbs', 'protein', 'fat', and/or 'category'`
                 }
             })
         }
-        
+
+        //if name of the menu item is missing
         if(itemToUpdate.name == null){
             return res
                     .status(400)
                     .json({error: {message: `Missing 'name' in request body`}})
         }
 
+        //if a category is not selected
         if(itemToUpdate.category == null){
             return res
                     .status(400)
                     .json({error: {message: `Missing 'category' in request body`}})
         }
 
+        //if the category selected is not a valid category
         if(itemToUpdate.category != ('Breakfast' || 'Lunch' || 'Dinner')){
             return res
                     .status(400)
@@ -172,7 +175,8 @@ menuRouter
         }
 
         const array = [calories, carbs, protein, fat]
-                
+        
+        //if calories, carbs, protein, and/or fat is provided by the user
         for(let element of array){
           if(element!=undefined){
                 if(!Number.isInteger(element) || Number(element) < 0){
@@ -186,7 +190,7 @@ menuRouter
           }
         }
 
-                
+        //if an image url link is provided by the user        
         if(image_url!=undefined && image_url.length > 0  && !validate(image_url)){
             logger.error(`url must be a valid URL`)
             return res
@@ -195,8 +199,8 @@ menuRouter
                     error: { message: `url must be a valid URL`}
                 })
         }
-        
 
+        //update the menu item information in menu_tb
         MenuService.updateMenuItem(
             req.app.get('db'),
             req.params.item_id,
@@ -211,4 +215,4 @@ menuRouter
 
 
 
-module.exports = menuRouter
+module.exports = menuRouter;

@@ -5,8 +5,8 @@ const logger = require('../logger')
 const authRouter = express.Router()
 const jsonBodyParser = express.json()
 
-
 authRouter
+   //POST /auth/login
    .post('/auth/login', jsonBodyParser, (req, res, next) => {
         const { user_name, password } = req.body
         const loginUser = { user_name, password }
@@ -16,6 +16,7 @@ authRouter
             return res.status(400).json({
                 error: `Missing '${key}' in request body`
             })
+        //check database for matching user & password
         AuthService.getUserWithUserName(
               req.app.get('db'),
               loginUser.user_name
@@ -46,14 +47,16 @@ authRouter
   })
 
 authRouter
+  //POST /auth/refresh
   .post('/auth/refresh', requireAuth, (req, res) => {
     const sub = req.user.user_name
     const payload = { user_id: req.user.id }
+    //respond with a new JWT
     res.send({
       authToken: AuthService.createJwt(sub, payload),
     })
 })
   
-module.exports = authRouter
+module.exports = authRouter;
 
 

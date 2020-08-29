@@ -40,8 +40,6 @@ function createPlanItem(users, items){
     ]
 }
 
-
-
 function makeMaliciousMenuItem(user){
     const maliciousMenuItem = {
         id: 1, 
@@ -87,7 +85,6 @@ function cleanTables(db) {
   )
 }
 
-
 function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
         ...user,
@@ -103,7 +100,6 @@ function seedUsers(db, users) {
     )
     .catch(error => console.log(error))
 }
-
 
 function seedTables(db, users, items, planItems=[]) {
 
@@ -127,7 +123,6 @@ function seedTables(db, users, items, planItems=[]) {
     })  
 }
 
-
 function seedMaliciousItem(db, user, item) {
       return seedUsers(db, [user])
          .then(() =>
@@ -136,7 +131,6 @@ function seedMaliciousItem(db, user, item) {
               .insert([item])
       )
 }
-
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
     const token = jwt.sign(
@@ -149,7 +143,6 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
         })
         return `Bearer ${token}`
 }
-
 
 module.exports = {
     makeUsers,

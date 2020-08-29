@@ -2,6 +2,7 @@ const AuthService = require('../auth/auth-service')
 const logger = require('../logger')
 
 function requireAuth(req, res, next) {
+    //verify that the request header includes authorization credentials & get the bearer token
     const authToken = req.get('Authorization') || ''
     let bearerToken
     if (!authToken.toLowerCase().startsWith('bearer ')) {
@@ -12,8 +13,10 @@ function requireAuth(req, res, next) {
     }
 
     try {
+        //verify the bearer token
         const payload = AuthService.verifyJwt(bearerToken)
 
+        //verify that the user exists in the database
         AuthService.getUserWithUserName(
             req.app.get('db'),
             payload.sub
@@ -37,7 +40,7 @@ function requireAuth(req, res, next) {
 }
 
 module.exports = {
-    requireAuth,
+    requireAuth
 }
 
 

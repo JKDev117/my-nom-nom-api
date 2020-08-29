@@ -75,7 +75,6 @@ describe('Menu Endpoints', function(){
                     })
             })
         })//end context 'Given an XSS attack menu item'
-
     })//end describe 'GET /menu'  
 
     

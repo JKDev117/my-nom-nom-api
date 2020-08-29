@@ -1,5 +1,4 @@
 const knex = require('knex')
-const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 const supertest = require('supertest')
@@ -69,25 +68,17 @@ describe('Auth Endpoints', function() {
             .expect(400, { error: `Incorrect user_name or password` })
     })
 
-
     it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
-
-
-          
           const userValidCreds = {
             user_name: testUser.user_name,
             password: testUser.password,
           }
-
-
           return supertest(app)
             .post('/auth/login')
             .send(userValidCreds)
             .expect(200)
             .expect(res => expect(res.body).to.have.property('authToken'))
     })
-    
-
   })//end describe 'POST /auth/login'
 
   describe(`POST /auth/refresh`, () => {
@@ -97,13 +88,10 @@ describe('Auth Endpoints', function() {
         testUsers,
       )
     )
-
     it(`responds 200 and JWT auth token using secret`, () => {
-
       return supertest(app)
         .post('/auth/refresh')
         .set('Authorization', helpers.makeAuthHeader(testUser))
-
         .expect(200)
         .expect(res => expect(res.body).to.have.property('authToken'))
     })

@@ -8,7 +8,7 @@ const PlanService = {
                 return rows[0]
             })
     },
-    getAllPlanItems(knex, user_id) {
+    getAllPlanItems(knex) {
         return knex.raw(
             `SELECT
                 p.id,

@@ -6,25 +6,11 @@ const PlanService = require('./plan-service')
 const logger = require('../logger')
 const { requireAuth } = require('../middleware/jwt-auth')
 
-
-const serializePlanItem = item => ({
-    user_id: item.user_id,
-    menu_item_id: item.menu_item_id,
-    name: xss(item.name),
-    image_url: xss(item.image_url),
-    calories: item.calories,
-    carbs: item.carbs,
-    protein: item.protein,
-    fat: item.fat,
-    category: item.category,
-})
-
-
 planRouter
     .route('/plan')
     //ALL
     .all(requireAuth)
-    //POST
+    //POST /plan
     .post(bodyParser, (req, res, next) => {
 
         const { id, user_id } = req.body
@@ -42,11 +28,11 @@ planRouter
                     .json(item)
             })
             .catch(next)
-    })//end POST /plan
-    //GET
+    })
+    //GET /plan
     .get((req,res,next) => {
         const knexInstance = req.app.get('db')
-        PlanService.getAllPlanItems(knexInstance, req.user.id)
+        PlanService.getAllPlanItems(knexInstance)
             .then(items => {
                     res.json(items.rows)    
                 })
@@ -55,10 +41,8 @@ planRouter
                 next(error)
             })
     })
-    //DELETE
+    //DELETE /plan
     .delete(bodyParser, (req, res, next) => {
-
-        
         PlanService.searchForPlanItem(
             req.app.get('db'),
             req.body
@@ -81,6 +65,6 @@ planRouter
                 res.status(204).end()
             )
             .catch(next)
-    })//end delete
+    })//end delete /plan
     
-module.exports = planRouter
+module.exports = planRouter;
