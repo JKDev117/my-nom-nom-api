@@ -6,7 +6,6 @@ const xss = require('xss')
 const MenuService = require('./menu-service')
 const validate = require('url-validator')
 const logger = require('../logger')
-//const { requireAuth } = require('../middleware/basic-auth')
 const { requireAuth } = require('../middleware/jwt-auth')
 
 
@@ -83,18 +82,7 @@ menuRouter
                     error: { message: `url must be a valid URL`}
                 })
         }
-        
-        /*
-        for(const [key, value] of Object.entries(newMenuItem)){
-            if(value==null){
-                return res
-                    .status(400)
-                    .json({error: {message: `Missing '${key}' in request body`}})
-            }
-        }
-        
-        newMenuItem.name = name
-        */
+
 
         newMenuItem.user_id = req.user.id
 
@@ -182,18 +170,6 @@ menuRouter
                     .status(400)
                     .json({error: {message: `Category must be Breakfast, Lunch, or Dinner`}})
         }
-                
-        /*
-        array.forEach((element, i) => {
-          if(element!=undefined && element!=null && element.length > 0 && (!Number.isInteger(element) || element < 0)){
-            logger.error(`calories, carbs, protein, or fat category must be a NUMBER greater than zero`)
-            return res
-                .status(400)
-                .json({
-                    error: { message: `calories, carbs, protein, or fat category must be a NUMBER greater than zero`}
-                })
-          }
-        })*/
 
         const array = [calories, carbs, protein, fat]
                 
@@ -228,7 +204,6 @@ menuRouter
             req.user.id
         )
             .then(numRowsAffected => {
-                //console.log('numRowsAffected', numRowsAffected)
                 res.status(204).end()
             })
             .catch(next)

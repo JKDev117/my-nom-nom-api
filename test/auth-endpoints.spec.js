@@ -71,41 +71,18 @@ describe('Auth Endpoints', function() {
 
 
     it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
-      /*console.log('testUser', testUser)    
-          app.get('db')
-              ('users_tb')
-            .where({ id: 1})
-            .first()
-            .then(user => console.log(user)) */
-          //console.log(process.env.JWT_SECRET)
-          //console.log(process.env.JWT_EXPIRY)
-          //console.log(process.env.NODE_ENV)
-          //console.log(process.env.API_TOKEN)
+
+
           
           const userValidCreds = {
             user_name: testUser.user_name,
             password: testUser.password,
           }
-          /*
-          const expectedToken = jwt.sign(
-            { user_id: testUser.id }, // payload
-            process.env.JWT_SECRET,
-            {
-              subject: testUser.user_name,
-              expiresIn: process.env.JWT_EXPIRY,
-              algorithm: 'HS256',
-            }
-          )
-          */
+
 
           return supertest(app)
             .post('/auth/login')
             .send(userValidCreds)
-            /*
-            .expect(200, {
-              authToken: expectedToken,
-            })
-            */
             .expect(200)
             .expect(res => expect(res.body).to.have.property('authToken'))
     })
@@ -122,22 +99,11 @@ describe('Auth Endpoints', function() {
     )
 
     it(`responds 200 and JWT auth token using secret`, () => {
-      /*
-      const expectedToken = jwt.sign(
-        { user_id: testUser.id },
-        process.env.JWT_SECRET,
-        {
-          subject: testUser.user_name,
-          expiresIn: process.env.JWT_EXPIRY,
-          algorithm: 'HS256',
-        }
-      )*/
+
       return supertest(app)
         .post('/auth/refresh')
         .set('Authorization', helpers.makeAuthHeader(testUser))
-        /*.expect(200, {
-          authToken: expectedToken,
-        })*/
+
         .expect(200)
         .expect(res => expect(res.body).to.have.property('authToken'))
     })

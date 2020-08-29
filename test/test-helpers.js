@@ -84,18 +84,6 @@ function cleanTables(db) {
             plan_tb
             RESTART IDENTITY CASCADE`
         )
-        //TRUNCATE -- empty a table or set of tables
-        //RESTART IDENTITY - Automatically restart sequences owned by columns of the truncated table(s).
-        //CASCADE - Automatically truncate all tables that have foreign-key references to any of the named tables, or to any tables added to the group due to CASCADE.
-    /*    
-    .then(() =>
-      Promise.all([
-        trx.raw(`ALTER SEQUENCE menu_tb_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`ALTER SEQUENCE users_tb_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`SELECT setval('menu_tb_id_seq', 0)`),
-        trx.raw(`SELECT setval('users_tb_id_seq', 0)`),
-      ])
-    )*/
   )
 }
 
@@ -118,19 +106,7 @@ function seedUsers(db, users) {
 
 
 function seedTables(db, users, items, planItems=[]) {
-    //console.log('db @test-helpers.js @seedTables', db)
-    //console.log('users @test-helpers.js @seedTables', users)
-    //console.log('items @test-helpers.js @seedTables', items)
-    /*
-    return db
-      .into('users_tb')
-      .insert(users)
-      .then(() =>
-        db
-          .into('menu_tb')
-          .insert(items)
-      )
-      */
+
     //use a transaction to group the queries and auto rollback on any failure 
     return db.transaction(async trx => {
         try {
@@ -153,9 +129,6 @@ function seedTables(db, users, items, planItems=[]) {
 
 
 function seedMaliciousItem(db, user, item) {
-    /*return db
-      .into('users_tb')
-      .insert([user])*/
       return seedUsers(db, [user])
          .then(() =>
             db
@@ -174,7 +147,6 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
           expiresIn: process.env.JWT_EXPIRY,
           algorithm: 'HS256',
         })
-        //console.log('token generated from makeAuthHeader call', token)    
         return `Bearer ${token}`
 }
 

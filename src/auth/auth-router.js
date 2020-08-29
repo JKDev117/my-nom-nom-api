@@ -11,21 +11,16 @@ authRouter
         const { user_name, password } = req.body
         const loginUser = { user_name, password }
 
-        //console.log('user_name @post /auth/login @auth-router.js', user_name)
-        //console.log('password @post /auth/login @auth-router.js', password)
-
         for (const [key, value] of Object.entries(loginUser))
         if (value == null)
             return res.status(400).json({
                 error: `Missing '${key}' in request body`
             })
-        //console.log('loginUser.user_name @auth-router.js', loginUser.user_name)
         AuthService.getUserWithUserName(
               req.app.get('db'),
               loginUser.user_name
             )
               .then(dbUser => {
-                //console.log('dbUser @auth-router.js', dbUser)
                 if (!dbUser){
                   logger.error('@auth-router.js >> Incorrect user_name')
                   return res.status(400).json({

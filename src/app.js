@@ -5,14 +5,11 @@ const express = require('express')
 const morgan = require('morgan')
 const helmet = require('helmet')
 const cors = require('cors')
-const {v4:uuid} = require('uuid')
-//const { CLIENT_ORIGIN } = require('./config')
 const logger = require('./logger')
 const menuRouter = require('./menu/menu-router')
 const authRouter = require('./auth/auth-router')
 const usersRouter = require('./users/users-router')
 const planRouter = require('./plan/plan-router')
-const validateBearerToken = require('./validate-bearer-token')
 
 const app = express()
 
@@ -21,15 +18,8 @@ const morganOption = (process.env.NODE_ENV === 'production')
   : 'common';
 
 app.use(morgan(morganOption))
-app.use(helmet()) //Make sure to place helmet before cors in the pipeline. 17.6
+app.use(helmet())
 app.use(cors())
-/*
-app.use(cors({
-    origin: CLIENT_ORIGIN
-  }))
-*/
-
-//app.use(validateBearerToken);
 
 app.use(function errorHandler(error, req, res, next) {
   let response
