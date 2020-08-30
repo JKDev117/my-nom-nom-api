@@ -111,8 +111,6 @@ describe('Plan Endpoints', function(){
     //describe 'DELETE /menu'
     describe('DELETE /plan', () => {
         
-        const testItem = testItems[0] 
-
         context('Given no plan items', () => {
             
             before('insert user', () => 

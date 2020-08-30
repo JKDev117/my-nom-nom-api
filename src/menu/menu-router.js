@@ -53,7 +53,7 @@ menuRouter
         }
 
         //if the category selected is not a valid category
-        if(newMenuItem.category != ('Breakfast' || 'Lunch' || 'Dinner')){
+        if(['Breakfast', 'Lunch', 'Dinner'].includes(newMenuItem.category) == false){
             return res
                     .status(400)
                     .json({error: {message: `Category must be Breakfast, Lunch, or Dinner`}})
@@ -168,7 +168,7 @@ menuRouter
         }
 
         //if the category selected is not a valid category
-        if(itemToUpdate.category != ('Breakfast' || 'Lunch' || 'Dinner')){
+        if(['Breakfast', 'Lunch', 'Dinner'].includes(itemToUpdate.category) == false){
             return res
                     .status(400)
                     .json({error: {message: `Category must be Breakfast, Lunch, or Dinner`}})

@@ -17,7 +17,7 @@ planRouter
         const newPlanItem = { user_id }
 
         newPlanItem.menu_item_id = id
-
+        
         PlanService.addMenuItem(
             req.app.get('db'),
             newPlanItem
