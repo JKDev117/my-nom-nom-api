@@ -6,7 +6,7 @@ const PlanService = {
             .returning('*')
             .then(rows => {
                 return rows[0]
-            })
+            });
     },
     getAllPlanItems(knex) {
         return knex.raw(
@@ -23,7 +23,7 @@ const PlanService = {
                 m.category
             FROM plan_tb p
             JOIN menu_tb m
-            ON p.menu_item_id = m.id`)
+            ON p.menu_item_id = m.id`);
     },
     searchForPlanItem(knex, req_body){
         return knex
@@ -31,7 +31,7 @@ const PlanService = {
             .from('plan_tb')
             .where(
                 { id: req_body.id, })
-            .first()
+            .first();
     },
     removePlanItem(knex, req_body){
         return knex
@@ -39,13 +39,13 @@ const PlanService = {
             .from('plan_tb')
             .where(
                 { id: req_body.id, })
-            .delete()
+            .delete();
     }
 
 
-} //end PlanService
+}; //end PlanService
 
 
-module.exports = PlanService
+module.exports = PlanService;
 
 

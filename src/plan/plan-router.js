@@ -1,10 +1,10 @@
-const express = require('express')
-const planRouter = express.Router()
-const bodyParser = express.json()
-const xss = require('xss')
-const PlanService = require('./plan-service')
-const logger = require('../logger')
-const { requireAuth } = require('../middleware/jwt-auth')
+const express = require('express');
+const planRouter = express.Router();
+const bodyParser = express.json();
+const xss = require('xss');
+const PlanService = require('./plan-service');
+const logger = require('../logger');
+const { requireAuth } = require('../middleware/jwt-auth');
 
 planRouter
     .route('/plan')
@@ -13,10 +13,10 @@ planRouter
     //POST /plan
     .post(bodyParser, (req, res, next) => {
 
-        const { id, user_id } = req.body
-        const newPlanItem = { user_id }
+        const { id, user_id } = req.body;
+        const newPlanItem = { user_id };
 
-        newPlanItem.menu_item_id = id
+        newPlanItem.menu_item_id = id;
         
         PlanService.addMenuItem(
             req.app.get('db'),
@@ -25,20 +25,20 @@ planRouter
             .then(item => {
                 res
                     .status(201)
-                    .json(item)
+                    .json(item);
             })
-            .catch(next)
+            .catch(next);
     })
     //GET /plan
     .get((req,res,next) => {
-        const knexInstance = req.app.get('db')
+        const knexInstance = req.app.get('db');
         PlanService.getAllPlanItems(knexInstance)
             .then(items => {
-                    res.json(items.rows)    
+                    res.json(items.rows);  
                 })
             .catch(error => {
-                console.log(error)
-                next(error)
+                console.log(error);
+                next(error);
             })
     })
     //DELETE /plan
@@ -49,13 +49,13 @@ planRouter
         )
             .then(result => {
                 if(!result) {
-                    logger.error("Plan item doesn't exist!")
+                    logger.error("Plan item doesn't exist!");
                     return res.status(404).json({
                         error: {message: "Plan item doesn't exist!"}
-                    })
-                }
+                    });
+                };
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err));
         
         PlanService.removePlanItem(
             req.app.get('db'),
@@ -64,7 +64,7 @@ planRouter
             .then(() => 
                 res.status(204).end()
             )
-            .catch(next)
-    })//end delete /plan
+            .catch(next);
+    });//end delete /plan
     
 module.exports = planRouter;

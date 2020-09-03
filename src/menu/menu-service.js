@@ -1,6 +1,6 @@
 const MenuService = {
     getAllMenuItems(knex, user_id) {
-        return knex.select('*').from('menu_tb').where('user_id', user_id).orderBy('id')
+        return knex.select('*').from('menu_tb').where('user_id', user_id).orderBy('id');
     },
     addMenuItem(knex, newMenuItem){
         return knex
@@ -9,28 +9,28 @@ const MenuService = {
             .returning('*')
             .then(rows => {
                 return rows[0]
-            })
+            });
     },
     getById(knex, id, user_id){
         return knex
             .from('menu_tb')
             .select('*')
             .where({id: id, user_id: user_id})
-            .first()
+            .first();
     },
     deleteMenuItem(knex, id, user_id) {
         return knex('menu_tb')
             .where({id: id, user_id: user_id})
-            .delete()
+            .delete();
     },
     updateMenuItem(knex, id, newMenuItemFields, user_id){
         return knex('menu_tb')
             .where({id: id, user_id: user_id})
-            .update(newMenuItemFields)
+            .update(newMenuItemFields);
     }
-}//end MenuService
+};//end MenuService
 
 
-module.exports = MenuService
+module.exports = MenuService;
 
 

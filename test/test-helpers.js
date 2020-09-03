@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 function makeUsers(){
     return [
@@ -11,8 +11,8 @@ function makeUsers(){
             password: 'Password1!',
             date_created: '2029-01-22T16:28:32.615Z',
         },
-    ]
-}
+    ];
+};
 
 function createMenu(users){
     return [
@@ -27,8 +27,8 @@ function createMenu(users){
         {id: 7, name: "Chicken Parmigiana", user_id: users[0].id, image_url:"http://www.cookingclassy.com/wp-content/uploads/2013/02/chicken-parmsesan6.jpg", calories: 570, carbs: 40, protein: 58, fat: 18, category: "Dinner"},
         {id: 8, name: "Spaghetti & Meatballs", user_id: users[0].id, image_url: "https://www.kitchensanctuary.com/wp-content/uploads/2016/02/One-pan-spaghetti-and-meatballs-tall.jpg", calories: 620, carbs: 50, protein: 26, fat: 34, category: "Dinner"},
         {id: 9, name: "Ribeye Steak", user_id: users[0].id, image_url:"https://www.harrisranch.com/wp-content/uploads/2019/01/photo_ribeye_steak4SMALL_1024x1024.jpg", calories: 810, carbs: 0, protein: 96, fat: 54, category: "Dinner"},
-    ]
-}
+    ];
+};
 
 function createPlanItem(users, items){
     return [
@@ -37,8 +37,8 @@ function createPlanItem(users, items){
           menu_item_id: items[0].id, 
           user_id: users[0].id, 
         }
-    ]
-}
+    ];
+};
 
 function makeMaliciousMenuItem(user){
     const maliciousMenuItem = {
@@ -51,27 +51,27 @@ function makeMaliciousMenuItem(user){
         protein: 25,
         fat: 49,  
         category: "Breakfast"
-    }
+    };
 
     const expectedMenuItem = {
         ...maliciousMenuItem,
         name: 'Sausage, Eggs, Biscuit, & &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
         image_url: "https://insecure-website.com/status?message=&lt;script&gt;alert('xss');&lt;/script&gt;"
-    }
+    };
 
     return {
         maliciousMenuItem,
         expectedMenuItem
-    }
+    };
 
-}
+};
 
 function makeItemsFixtures(){
-    const testUsers = makeUsers()
-    const testItems = createMenu(testUsers)
-    const testPlanItem = createPlanItem(testUsers, testItems)
-    return { testUsers, testItems, testPlanItem }
-}
+    const testUsers = makeUsers();
+    const testItems = createMenu(testUsers);
+    const testPlanItem = createPlanItem(testUsers, testItems);
+    return { testUsers, testItems, testPlanItem };
+};
 
 function cleanTables(db) {
     return db.transaction(trx =>
@@ -82,14 +82,14 @@ function cleanTables(db) {
             plan_tb
             RESTART IDENTITY CASCADE`
         )
-  )
-}
+  );
+};
 
 function seedUsers(db, users) {
     const preppedUsers = users.map(user => ({
         ...user,
         password: bcrypt.hashSync(user.password, 12)
-    }))
+    }));
     return db.into('users_tb').insert(preppedUsers)
     .then(() =>
         // update the auto sequence to stay in sync
@@ -98,16 +98,16 @@ function seedUsers(db, users) {
             [users[users.length - 1].id],
         )
     )
-    .catch(error => console.log(error))
-}
+    .catch(error => console.log(error));
+};
 
 function seedTables(db, users, items, planItems=[]) {
 
     //use a transaction to group the queries and auto rollback on any failure 
     return db.transaction(async trx => {
         try {
-            await seedUsers(trx, users)
-            await trx.into('menu_tb').insert(items)
+            await seedUsers(trx, users);
+            await trx.into('menu_tb').insert(items);
             //update the auto sequence to match the forced id values
             await trx.raw(
                 `SELECT setval('menu_tb_id_seq', ?)`,
@@ -115,13 +115,13 @@ function seedTables(db, users, items, planItems=[]) {
             )  
             //only inserts plan items if there are some
             if(planItems.length){
-                await trx.into('plan_tb').insert(planItems)
+                await trx.into('plan_tb').insert(planItems);
             } 
         } catch(e){
-            console.log("error", e)
-        }
-    })  
-}
+            console.log("error", e);
+        };
+    });  
+};
 
 function seedMaliciousItem(db, user, item) {
       return seedUsers(db, [user])
@@ -129,8 +129,8 @@ function seedMaliciousItem(db, user, item) {
             db
               .into('menu_tb')
               .insert([item])
-      )
-}
+      );
+};
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
     const token = jwt.sign(
@@ -141,8 +141,8 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
           expiresIn: process.env.JWT_EXPIRY,
           algorithm: 'HS256',
         })
-        return `Bearer ${token}`
-}
+        return `Bearer ${token}`;
+};
 
 module.exports = {
     makeUsers,
@@ -156,7 +156,7 @@ module.exports = {
     seedTables,
     seedMaliciousItem,
     makeAuthHeader,
-}
+};
 
 
 
